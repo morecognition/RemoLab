@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
 import 'package:remorder/ui/components/recording_button.dart';
-import 'package:vector_math/vector_math.dart' show Vector3;
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../components/data_chart.dart';
@@ -53,7 +52,7 @@ class RemoTransmission extends StatelessWidget {
                         if (context.mounted) {
                           context
                               .read<RemoFileBloc>()
-                              .add(OpenRecord(result.files.single.path!));
+                              .add(OpenRmsRecord(result.files.single.path!));
                           Navigator.pushNamed(context, "/playback_page").then((c) {
                             if (context.mounted) {
                               context.read<RemoFileBloc>().add(Reset());
@@ -118,11 +117,11 @@ class RemoTransmission extends StatelessWidget {
                         color: Colors.white,
                         child: remoState is TransmissionStarted
                             ? DataChart(
-                                remoDataStream: remoState.remoDataStream,
+                                rmsDataStream: remoState.rmsDataStream,
                                 colors: channelColors,
                                 key: Key("remo chart"))
                             : DataChart(
-                                remoDataStream: Stream.empty(),
+                                rmsDataStream: Stream.empty(),
                                 colors: channelColors,
                                 key: Key("empty chart")),
                       ),
@@ -134,8 +133,12 @@ class RemoTransmission extends StatelessWidget {
                                     .read<RemoFileBloc>()
                                     .add(StartRecording(
                                         remoState is TransmissionStarted
-                                            ? remoState.remoDataStream
-                                            : Stream.empty())),
+                                            ? remoState.rmsDataStream
+                                            : Stream.empty(),
+                                        remoState is TransmissionStarted
+                                            ? remoState.imuDataStream
+                                            : Stream.empty()
+                                    )),
                                 onStopPressed: () => context
                                     .read<RemoFileBloc>()
                                     .add(StopRecording()),
@@ -240,14 +243,6 @@ class RemoTransmission extends StatelessWidget {
       ],
     );
   }
-}
-
-RemoData _csvLineToRemoData(List<double> line) {
-  return RemoData(
-      emg: line.take(8).toList(),
-      acceleration: Vector3(line[8], line[9], line[10]),
-      angularVelocity: Vector3(line[11], line[12], line[13]),
-      magneticField: Vector3(line[14], line[15], line[16]));
 }
 
 class _ColorButton extends StatelessWidget {

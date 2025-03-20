@@ -38,7 +38,7 @@ class RemoPlayback extends StatelessWidget {
             builder: (context, remoFileState) {
               var pageName = "Data visualization";
 
-              if(remoFileState is RecordOpened) {
+              if(remoFileState is RmsRecordOpened) {
                 pageName = remoFileState.filePath.split('/').last;
               }
 
@@ -74,14 +74,14 @@ class RemoPlayback extends StatelessWidget {
                       width: 343.adaptedWidth,
                       height: 432.adaptedHeight,
                       color: Colors.white,
-                      child: remoFileState is RecordOpened
+                      child: remoFileState is RmsRecordOpened
                           ? DataChart(
-                              remoDataStream: Stream.fromIterable(remoFileState.remoData),
+                              rmsDataStream: Stream.fromIterable(remoFileState.rmsData),
                               colors: channelColors,
                               showAll: true,
                               key: Key("remo chart"))
                           : DataChart(
-                              remoDataStream: Stream.empty(),
+                              rmsDataStream: Stream.empty(),
                               colors: channelColors,
                               key: Key("empty chart")),
                     ),
@@ -185,14 +185,6 @@ class RemoPlayback extends StatelessWidget {
       ],
     );
   }
-}
-
-RemoData _csvLineToRemoData(List<double> line) {
-  return RemoData(
-      emg: line.take(8).toList(),
-      acceleration: Vector3(line[8], line[9], line[10]),
-      angularVelocity: Vector3(line[11], line[12], line[13]),
-      magneticField: Vector3(line[14], line[15], line[16]));
 }
 
 class _ColorButton extends StatelessWidget {

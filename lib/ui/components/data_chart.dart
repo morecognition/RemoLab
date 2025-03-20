@@ -15,14 +15,14 @@ class DataChart extends StatefulWidget {
   }
 
   const DataChart({super.key,
-    required this.remoDataStream,
+    required this.rmsDataStream,
     this.colors,
     this.showAll = false,
     this.scrollSpeed = 0.1,
     this.windowSizeInSeconds = 7
   });
 
-  final Stream<RemoData> remoDataStream;
+  final Stream<RmsData> rmsDataStream;
   final bool showAll;
   final double scrollSpeed;
   final int windowSizeInSeconds;
@@ -209,8 +209,8 @@ class _DataChartState extends State<DataChart> {
     );
 
     // Listening to Remo.
-    remoStreamSubscription = widget.remoDataStream.listen(
-          (remoData) {
+    rmsStreamSubscription = widget.rmsDataStream.listen(
+          (rmsData) {
         setState(
               () {
             // Adding EMG values to the chart's buffer.
@@ -220,9 +220,9 @@ class _DataChartState extends State<DataChart> {
               }
 
               _emgChannels[i].add(
-                FlSpot(xvalue, remoData.emg[i]),
+                FlSpot(xvalue, rmsData.emg[i]),
               );
-              _radarEntries[i] = RadarEntry(value: remoData.emg[i]);
+              _radarEntries[i] = RadarEntry(value: rmsData.emg[i]);
             }
             xvalue += step;
           },
@@ -234,7 +234,7 @@ class _DataChartState extends State<DataChart> {
   @override
   void dispose() {
     super.dispose();
-    remoStreamSubscription.cancel();
+    rmsStreamSubscription.cancel();
   }
 
   double xvalue = 0;
@@ -257,5 +257,5 @@ class _DataChartState extends State<DataChart> {
     const RadarEntry(value: 453),
   ];
 
-  late final StreamSubscription<RemoData> remoStreamSubscription;
+  late final StreamSubscription<RmsData> rmsStreamSubscription;
 }
