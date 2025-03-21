@@ -34,36 +34,39 @@ class RemoTransmission extends StatelessWidget {
         backgroundColor: const Color(0xFFF6F7FF),
         toolbarHeight: 50.adaptedHeight,
         flexibleSpace: Container(
-          alignment: Alignment.bottomCenter,
-          child: Row(
-            children: [
+            alignment: Alignment.bottomCenter,
+            child: Row(children: [
               SizedBox(width: 20.adaptedWidth),
               BlocBuilder<RemoFileBloc, RemoFileState>(
-                builder: (context, remoFileState) {
-                  return IconButton(
-                      onPressed: remoFileState is Recording ? null : () async {
-                        var result = await FilePicker.platform.pickFiles(
-                            type: FileType.custom, allowedExtensions: ['csv']);
+                  builder: (context, remoFileState) {
+                return IconButton(
+                    onPressed: remoFileState is Recording
+                        ? null
+                        : () async {
+                            var result = await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['csv']);
 
-                        if (result == null || result.files.single.path == null) {
-                          return;
-                        }
-
-                        if (context.mounted) {
-                          context
-                              .read<RemoFileBloc>()
-                              .add(OpenRmsRecord(result.files.single.path!));
-                          Navigator.pushNamed(context, "/playback_page").then((c) {
-                            if (context.mounted) {
-                              context.read<RemoFileBloc>().add(Reset());
+                            if (result == null ||
+                                result.files.single.path == null) {
+                              return;
                             }
-                          });
-                        }
-                      },
-                      icon: Image.asset("assets/folder_icon.png",
-                        color: remoFileState is Recording ? Colors.grey : null));
-                }
-              ),
+
+                            if (context.mounted) {
+                              context.read<RemoFileBloc>().add(
+                                  OpenRmsRecord(result.files.single.path!));
+                              Navigator.pushNamed(context, "/playback_page")
+                                  .then((c) {
+                                if (context.mounted) {
+                                  context.read<RemoFileBloc>().add(Reset());
+                                }
+                              });
+                            }
+                          },
+                    icon: Image.asset("assets/folder_icon.png",
+                        color:
+                            remoFileState is Recording ? Colors.grey : null));
+              }),
               SizedBox(width: 35.adaptedWidth),
               Text(
                 "Data visualization",
@@ -72,9 +75,12 @@ class RemoTransmission extends StatelessWidget {
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700),
               ),
-            ],
-          ),
-        ),
+              SizedBox(width: 30.adaptedWidth),
+              IconButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, "/imu_debug"),
+                  icon: Image.asset("assets/imu_debug_icon.png", width: 25.adaptedWidth, height: 25.adaptedHeight, color: Theme.of(context).primaryColor,)),
+            ])),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF6F7FF),
@@ -137,8 +143,7 @@ class RemoTransmission extends StatelessWidget {
                                             : Stream.empty(),
                                         remoState is TransmissionStarted
                                             ? remoState.imuDataStream
-                                            : Stream.empty()
-                                    )),
+                                            : Stream.empty())),
                                 onStopPressed: () => context
                                     .read<RemoFileBloc>()
                                     .add(StopRecording()),

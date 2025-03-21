@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:design_sync/design_sync.dart';
 import 'package:remorder/ui/pages/home.dart';
+import 'package:remorder/ui/pages/imu_debug.dart';
 import 'package:remorder/ui/pages/paring_page.dart';
 import 'package:remorder/ui/pages/remo_connection.dart';
 import 'package:remorder/ui/pages/remo_playback.dart';
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
               '/remo_transmission': (context) => const RemoTransmission(),
               '/save_page': (context) => const SavePage(),
               '/playback_page': (context) => const RemoPlayback(),
+              '/imu_debug': (context) => const ImuDebug(),
             },
             initialRoute: '/pairing',
           );
