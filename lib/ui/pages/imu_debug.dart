@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
+import 'package:remorder/ui/components/imu_data_visualization.dart';
 import 'package:remorder/ui/components/recording_button.dart';
 import 'package:remorder/ui/components/rotation_guizmo.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -48,7 +49,12 @@ class ImuDebug extends StatelessWidget {
           }
 
           return Center(
-              child: RotationGuizmo(imuDataStream: remoState is TransmissionStarted ? remoState.imuDataStream : Stream.empty())
+              child: Stack(
+                children: [
+                  ImuDataVisualization(imuDataStream: remoState is TransmissionStarted ? remoState.imuDataStream : Stream.empty()),
+                  RotationGizmo(imuDataStream: remoState is TransmissionStarted ? remoState.imuDataStream : Stream.empty()),
+                ],
+              )
           );
 
         },
