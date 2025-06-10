@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
                   color: Color.fromRGBO(255, 255, 255, 1),
                 ),
               ),
-              tabBarTheme: const TabBarTheme(
+              tabBarTheme: const TabBarThemeData(
                 labelColor: Color.fromRGBO(93, 225, 167, 1),
                 unselectedLabelColor: Colors.white70,
               ),
