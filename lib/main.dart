@@ -36,9 +36,8 @@ class MyApp extends StatelessWidget {
           BlocProvider<RemoBloc>(create: (context) => RemoBloc()),
           BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc())
         ],
-        child: Builder(
-          builder: (context) {
-            return MaterialApp(
+        child: Builder(builder: (context) {
+          return MaterialApp(
             title: 'Remo physiotherapy',
             theme: ThemeData(
               // Morecognition dark blue.
@@ -100,8 +99,7 @@ class MyApp extends StatelessWidget {
             },
             initialRoute: '/pairing',
           );
-          }
-        ),
+        }),
       ),
     );
   }

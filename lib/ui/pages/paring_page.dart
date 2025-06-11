@@ -2,7 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:design_sync/design_sync.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_remo/flutter_remo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -16,7 +19,7 @@ class PairingPage extends StatelessWidget {
         Image.asset(
           "assets/page_background.png",
           fit: BoxFit.fitHeight,
-          ),
+        ),
         Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -24,16 +27,12 @@ class PairingPage extends StatelessWidget {
             titleTextStyle: TextStyle(
                 color: Colors.white,
                 fontSize: 20.adaptedFontSize,
-                fontWeight: FontWeight.w600
-            ),
+                fontWeight: FontWeight.w600),
             toolbarHeight: 65.adaptedHeight,
             title: Center(
-              child: const Column(
-                children: [
-                  Text('Welcome to Remorder'),
-                ],
-              ),
-            ),
+                child: Expanded(
+                    child: Text('Benvenuto su Remorder',
+                        textAlign: TextAlign.center))),
           ),
           backgroundColor: Colors.transparent,
           body: Center(
@@ -43,9 +42,9 @@ class PairingPage extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 15.adaptedHeight),
-                  child: Text("Wear Remo and turn it on"),
+                  child: Text("Indossa REMO e accendilo"),
                 ),
-                Text("Turn on Bluetooth on your device"),
+                Text("Attiva il Bluetooth sul tuo telefono"),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 25.adaptedHeight),
                   child: Image.asset(
@@ -68,22 +67,52 @@ class PairingPage extends StatelessWidget {
                       48.adaptedHeight,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(24.adaptedRadius))
-                    ),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(24.adaptedRadius))),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: Text(
-                    'Start pairing',
-                    style: TextStyle(
-                      fontSize: 20.adaptedFontSize,
-                      fontWeight: FontWeight.w600
-                    )
-                  ),
+                  child: Text('Start pairing',
+                      style: TextStyle(
+                          fontSize: 20.adaptedFontSize,
+                          fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
           ),
         ),
+        Positioned(
+            top: 38.adaptedHeight,
+            left: 16.adaptedWidth,
+            child: BlocBuilder<RemoFileBloc, RemoFileState>(
+            builder: (context, remoFileState) {
+          return IconButton(
+              onPressed: remoFileState is Recording
+                  ? null
+                  : () async {
+                      var result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom, allowedExtensions: ['csv']);
+
+                      if (result == null || result.files.single.path == null) {
+                        return;
+                      }
+
+                      if (context.mounted) {
+                        context
+                            .read<RemoFileBloc>()
+                            .add(OpenRmsRecord(result.files.single.path!));
+                        Navigator.pushNamed(context, "/playback_page")
+                            .then((c) {
+                          if (context.mounted) {
+                            context.read<RemoFileBloc>().add(Reset());
+                          }
+                        });
+                      }
+                    },
+              icon: Image.asset("assets/add_file_icon.png",
+                  width: 36.adaptedWidth,
+                  height: 36.adaptedHeight,
+                  color: remoFileState is Recording ? Colors.grey : null));
+        }))
       ],
     );
   }
@@ -95,10 +124,10 @@ class PairingPage extends StatelessWidget {
 
     var locationUse = PermissionStatus.granted;
 
-    if(Platform.isAndroid) {
+    if (Platform.isAndroid) {
       var androidInfo = await DeviceInfoPlugin().androidInfo;
 
-      if(androidInfo.version.sdkInt <= 30) {
+      if (androidInfo.version.sdkInt <= 30) {
         locationUse = await Permission.locationWhenInUse.request();
       }
     }

@@ -36,10 +36,11 @@ class RemoTransmission extends StatelessWidget {
         flexibleSpace: Container(
             alignment: Alignment.bottomCenter,
             child: Row(children: [
-              SizedBox(width: 20.adaptedWidth),
+              SizedBox(height: 36.adaptedHeight),
               BlocBuilder<RemoFileBloc, RemoFileState>(
                   builder: (context, remoFileState) {
                 return IconButton(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
                     onPressed: remoFileState is Recording
                         ? null
                         : () async {
@@ -63,23 +64,31 @@ class RemoTransmission extends StatelessWidget {
                               });
                             }
                           },
-                    icon: Image.asset("assets/folder_icon.png",
+                    icon: Image.asset("assets/add_file_icon.png",
+                        width: 36.adaptedWidth,
+                        height: 36.adaptedHeight,
                         color:
                             remoFileState is Recording ? Colors.grey : null));
               }),
-              SizedBox(width: 35.adaptedWidth),
-              Text(
+              Expanded(
+                  child: Text(
+                textAlign: TextAlign.center,
                 "Data visualization",
                 style: TextStyle(
                     color: Color(0xFF2B3A51),
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700),
-              ),
-              SizedBox(width: 30.adaptedWidth),
+              )),
+              SizedBox(height: 36.adaptedHeight),
               IconButton(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, "/imu_debug"),
-                  icon: Image.asset("assets/imu_debug_icon.png", width: 25.adaptedWidth, height: 25.adaptedHeight, color: Theme.of(context).primaryColor,)),
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  onPressed: () => Navigator.pushNamed(context, "/imu_debug"),
+                  icon: Image.asset(
+                    "assets/imu_debug_icon.png",
+                    width: 26.adaptedWidth,
+                    height: 26.adaptedHeight,
+                    color: Theme.of(context).primaryColor,
+                  )),
             ])),
         centerTitle: true,
       ),
@@ -252,6 +261,7 @@ class RemoTransmission extends StatelessWidget {
 
 class _ColorButton extends StatelessWidget {
   const _ColorButton({required this.color, required this.text});
+
   final Color color;
   final String text;
 
