@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/loading_ring.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class RemoConnection extends StatelessWidget {
   const RemoConnection({super.key});
 
@@ -12,8 +14,7 @@ class RemoConnection extends StatelessWidget {
     //return _buildParingFailedWidget(context);
     return BlocBuilder<BluetoothBloc, BluetoothState>(
         builder: (context, bluetoothState) {
-      return BlocBuilder<RemoBloc, RemoState>(
-          builder: (context, remoState) {
+      return BlocBuilder<RemoBloc, RemoState>(builder: (context, remoState) {
         return Stack(
           children: [
             Image.asset(
@@ -65,18 +66,18 @@ class RemoConnection extends StatelessWidget {
     return Builder(builder: (context) {
       if (remoState is Disconnected) {
         if (bluetoothState is DiscoveringDevices) {
-          return const Text("Looking for REMO...");
+          return Text(AppLocalizations.of(context)!.looking_for_remo);
         } else if (bluetoothState is DiscoveredDevices) {
-          return const Text("Choose your device");
+          return Text(AppLocalizations.of(context)!.choose_device);
         } else {
           return Text("$bluetoothState");
         }
       } else if (remoState is Connecting) {
-        return const Text("Pairing...");
+        return Text(AppLocalizations.of(context)!.pairing);
       } else if (remoState is Connected) {
-        return const Text("Pairing successful");
+        return Text(AppLocalizations.of(context)!.pairing_successful);
       } else if (remoState is ConnectionError) {
-        return const Text("Pairing failed");
+        return Text(AppLocalizations.of(context)!.pairing_fail);
       } else {
         return Text("$remoState");
       }
@@ -109,7 +110,8 @@ class RemoConnection extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: List.generate(bluetoothState.deviceNames.length, (index) {
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.adaptedHeight, horizontal: 17.adaptedWidth),
+            padding: EdgeInsets.symmetric(
+                vertical: 8.adaptedHeight, horizontal: 17.adaptedWidth),
             child: ListTile(
               leading: Image.asset("assets/remo.png"),
               title: Text(
@@ -124,7 +126,8 @@ class RemoConnection extends StatelessWidget {
               tileColor: Color(0x6680D0D4),
               onTap: () {
                 context.read<RemoBloc>().add(
-                      OnConnectDevice(bluetoothState.deviceAddresses[index], bluetoothState.deviceNames[index]),
+                      OnConnectDevice(bluetoothState.deviceAddresses[index],
+                          bluetoothState.deviceNames[index]),
                     );
               },
             ),
@@ -135,11 +138,10 @@ class RemoConnection extends StatelessWidget {
   }
 
   Widget _buildParingSuccessfulWidget(BuildContext context) {
-    Future.delayed(Duration(seconds: 2),
-        () {
-          Navigator.pop(context);
-          Navigator.pushReplacementNamed(context, "/home");
-        });
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, "/home");
+    });
     return Center(
       child: Image.asset(
         'assets/remo_success.png',
@@ -154,9 +156,9 @@ class RemoConnection extends StatelessWidget {
         'assets/remo_fail.png',
       ),
       SizedBox(height: 170.adaptedHeight),
-      const Text("Wear Remo and turn it on"),
+      Text(AppLocalizations.of(context)!.wear_remo),
       SizedBox(height: 10.adaptedHeight),
-      const Text("Turn on Bluetooth on your device"),
+      Text(AppLocalizations.of(context)!.turn_on_bt),
       SizedBox(height: 42.adaptedHeight),
       FilledButton(
         onPressed: () {
@@ -172,7 +174,7 @@ class RemoConnection extends StatelessWidget {
                   BorderRadius.all(Radius.circular(24.adaptedRadius))),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        child: Text('Try again',
+        child: Text(AppLocalizations.of(context)!.try_again,
             style: TextStyle(
                 fontSize: 20.adaptedFontSize, fontWeight: FontWeight.w600)),
       ),

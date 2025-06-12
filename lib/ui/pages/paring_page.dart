@@ -9,6 +9,8 @@ import 'package:flutter_remo/flutter_remo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class PairingPage extends StatelessWidget {
   const PairingPage({super.key});
 
@@ -31,7 +33,7 @@ class PairingPage extends StatelessWidget {
             toolbarHeight: 65.adaptedHeight,
             title: Center(
                 child: Expanded(
-                    child: Text('Benvenuto su Remorder',
+                    child: Text(AppLocalizations.of(context)!.welcome,
                         textAlign: TextAlign.center))),
           ),
           backgroundColor: Colors.transparent,
@@ -42,9 +44,9 @@ class PairingPage extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 15.adaptedHeight),
-                  child: Text("Indossa REMO e accendilo"),
+                  child: Text(AppLocalizations.of(context)!.wear_remo),
                 ),
-                Text("Attiva il Bluetooth sul tuo telefono"),
+                Text(AppLocalizations.of(context)!.turn_on_bt),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 25.adaptedHeight),
                   child: Image.asset(
@@ -71,7 +73,7 @@ class PairingPage extends StatelessWidget {
                             Radius.circular(24.adaptedRadius))),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: Text('Start pairing',
+                  child: Text(AppLocalizations.of(context)!.start_pairing,
                       style: TextStyle(
                           fontSize: 20.adaptedFontSize,
                           fontWeight: FontWeight.w600)),
@@ -84,35 +86,37 @@ class PairingPage extends StatelessWidget {
             top: 38.adaptedHeight,
             left: 16.adaptedWidth,
             child: BlocBuilder<RemoFileBloc, RemoFileState>(
-            builder: (context, remoFileState) {
-          return IconButton(
-              onPressed: remoFileState is Recording
-                  ? null
-                  : () async {
-                      var result = await FilePicker.platform.pickFiles(
-                          type: FileType.custom, allowedExtensions: ['csv']);
+                builder: (context, remoFileState) {
+              return IconButton(
+                  onPressed: remoFileState is Recording
+                      ? null
+                      : () async {
+                          var result = await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['csv']);
 
-                      if (result == null || result.files.single.path == null) {
-                        return;
-                      }
-
-                      if (context.mounted) {
-                        context
-                            .read<RemoFileBloc>()
-                            .add(OpenRmsRecord(result.files.single.path!));
-                        Navigator.pushNamed(context, "/playback_page")
-                            .then((c) {
-                          if (context.mounted) {
-                            context.read<RemoFileBloc>().add(Reset());
+                          if (result == null ||
+                              result.files.single.path == null) {
+                            return;
                           }
-                        });
-                      }
-                    },
-              icon: Image.asset("assets/add_file_icon.png",
-                  width: 36.adaptedWidth,
-                  height: 36.adaptedHeight,
-                  color: remoFileState is Recording ? Colors.grey : null));
-        }))
+
+                          if (context.mounted) {
+                            context
+                                .read<RemoFileBloc>()
+                                .add(OpenRmsRecord(result.files.single.path!));
+                            Navigator.pushNamed(context, "/playback_page")
+                                .then((c) {
+                              if (context.mounted) {
+                                context.read<RemoFileBloc>().add(Reset());
+                              }
+                            });
+                          }
+                        },
+                  icon: Image.asset("assets/add_file_icon.png",
+                      width: 36.adaptedWidth,
+                      height: 36.adaptedHeight,
+                      color: remoFileState is Recording ? Colors.grey : null));
+            }))
       ],
     );
   }
@@ -142,13 +146,13 @@ class PairingPage extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Bluetooth permission'),
-            content: const Text(
-                'Remo needs Bluetooth permissions in order to connect with the device.'),
+            title: Text(AppLocalizations.of(context)!.permission_bt),
+            content: Text(AppLocalizations.of(context)!.permission_bt_request),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
+                onPressed: () =>
+                    Navigator.pop(context, AppLocalizations.of(context)!.ok),
+                child: Text(AppLocalizations.of(context)!.ok),
               ),
             ],
           );

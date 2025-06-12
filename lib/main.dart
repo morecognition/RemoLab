@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:design_sync/design_sync.dart';
 import 'package:remorder/ui/pages/home.dart';
@@ -10,6 +9,8 @@ import 'package:remorder/ui/pages/remo_connection.dart';
 import 'package:remorder/ui/pages/remo_playback.dart';
 import 'package:remorder/ui/pages/remo_transmission.dart';
 import 'package:remorder/ui/pages/save_page.dart';
+
+import 'l10n/app_localizations.dart';
 
 void main() async {
   await Future.delayed(Duration(seconds: 1));
@@ -39,16 +40,10 @@ class MyApp extends StatelessWidget {
         ],
         child: Builder(builder: (context) {
           return MaterialApp(
-            title: 'Remo physiotherapy',
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: [
-              Locale('it'), // Italian
-              Locale('en'), // English
-            ],
+            title: "Remo physiotherapy",
+            //Localization
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(
               // Morecognition dark blue.
               primaryColor: const Color(0xFF80D0D4),

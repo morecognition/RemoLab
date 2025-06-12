@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
-import 'package:vector_math/vector_math.dart' show Vector3;
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../components/data_chart.dart';
 
 class RemoPlayback extends StatelessWidget {
@@ -36,19 +36,18 @@ class RemoPlayback extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           child: BlocBuilder<RemoFileBloc, RemoFileState>(
             builder: (context, remoFileState) {
-              var pageName = "Data visualization";
+              var pageName = AppLocalizations.of(context)!.data_visualization;
 
-              if(remoFileState is RmsRecordOpened) {
+              if (remoFileState is RmsRecordOpened) {
                 pageName = remoFileState.filePath.split('/').last;
               }
 
-              return Text(
-                pageName,
-                style: TextStyle(
-                    color: Color(0xFF2B3A51),
-                    fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700));
-              },
+              return Text(pageName,
+                  style: TextStyle(
+                      color: Color(0xFF2B3A51),
+                      fontSize: 20.adaptedFontSize,
+                      fontWeight: FontWeight.w700));
+            },
           ),
         ),
         centerTitle: true,
@@ -76,7 +75,8 @@ class RemoPlayback extends StatelessWidget {
                       color: Colors.white,
                       child: remoFileState is RmsRecordOpened
                           ? DataChart(
-                              rmsDataStream: Stream.fromIterable(remoFileState.rmsData),
+                              rmsDataStream:
+                                  Stream.fromIterable(remoFileState.rmsData),
                               colors: channelColors,
                               showAll: true,
                               key: Key("remo chart"))
@@ -115,7 +115,7 @@ class RemoPlayback extends StatelessWidget {
                   ? Theme.of(context).primaryColor
                   : const Color(0x6680D0D4),
             ),
-            child: Text('Graph 1',
+            child: Text(AppLocalizations.of(context)!.graph_1,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700,
@@ -140,7 +140,7 @@ class RemoPlayback extends StatelessWidget {
                   ? Theme.of(context).primaryColor
                   : const Color(0x6680D0D4),
             ),
-            child: Text('Graph 2',
+            child: Text(AppLocalizations.of(context)!.graph_2,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700,
@@ -189,6 +189,7 @@ class RemoPlayback extends StatelessWidget {
 
 class _ColorButton extends StatelessWidget {
   const _ColorButton({required this.color, required this.text});
+
   final Color color;
   final String text;
 

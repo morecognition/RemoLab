@@ -9,6 +9,7 @@ import 'package:remorder/bloc/chart/chart_bloc.dart';
 import 'package:remorder/ui/components/recording_button.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../components/data_chart.dart';
 
 class RemoTransmission extends StatelessWidget {
@@ -73,7 +74,7 @@ class RemoTransmission extends StatelessWidget {
               Expanded(
                   child: Text(
                 textAlign: TextAlign.center,
-                "Data visualization",
+                AppLocalizations.of(context)!.data_visualization,
                 style: TextStyle(
                     color: Color(0xFF2B3A51),
                     fontSize: 20.adaptedFontSize,
@@ -187,7 +188,7 @@ class RemoTransmission extends StatelessWidget {
                   ? Theme.of(context).primaryColor
                   : const Color(0x6680D0D4),
             ),
-            child: Text('Graph 1',
+            child: Text(AppLocalizations.of(context)!.graph_1,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700,
@@ -212,7 +213,7 @@ class RemoTransmission extends StatelessWidget {
                   ? Theme.of(context).primaryColor
                   : const Color(0x6680D0D4),
             ),
-            child: Text('Graph 2',
+            child: Text(AppLocalizations.of(context)!.graph_2,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700,

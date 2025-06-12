@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/loading_loop.dart';
 
+import '../../l10n/app_localizations.dart';
 
 class SavePage extends StatefulWidget {
   const SavePage({super.key});
@@ -44,7 +45,10 @@ class _SaveState extends State<SavePage> {
               backgroundColor: Colors.transparent,
               body: Padding(
                 padding: EdgeInsets.only(
-                    right: 16.adaptedWidth, left: 16.adaptedWidth, top: 80.adaptedHeight, bottom: 30.adaptedHeight),
+                    right: 16.adaptedWidth,
+                    left: 16.adaptedWidth,
+                    top: 80.adaptedHeight,
+                    bottom: 30.adaptedHeight),
                 child: Center(child: BlocBuilder<RemoFileBloc, RemoFileState>(
                     builder: (context, remoFileState) {
                   if (remoFileState is SavingRecord) {
@@ -53,13 +57,14 @@ class _SaveState extends State<SavePage> {
 
                   if (remoFileState is RemoFileReady) {
                     Future.delayed(Duration(seconds: 2), () {
-                      if(context.mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                       }
                     });
                   }
 
-                  if (remoFileState is RecordSaved || remoFileState is RemoFileReady) {
+                  if (remoFileState is RecordSaved ||
+                      remoFileState is RemoFileReady) {
                     return Image.asset("assets/check_mark.png");
                   }
 
@@ -74,9 +79,9 @@ class _SaveState extends State<SavePage> {
   Widget _buildSaveScreen() {
     return Column(
       children: [
-        const Text("Your file will be saved in the download folder"),
+        Text(AppLocalizations.of(context)!.your_file_will_be_saved),
         SizedBox(height: 46.adaptedHeight),
-        const Text("Insert file name:"),
+        Text(AppLocalizations.of(context)!.insert_file_name),
         SizedBox(height: 15.adaptedHeight),
         _buildForm(),
         Spacer(),
@@ -94,7 +99,7 @@ class _SaveState extends State<SavePage> {
                     BorderRadius.all(Radius.circular(60.adaptedRadius))),
             backgroundColor: Theme.of(context).primaryColor,
           ),
-          child: Text('Save',
+          child: Text(AppLocalizations.of(context)!.save,
               style: TextStyle(
                   fontSize: 20.adaptedFontSize, fontWeight: FontWeight.w600)),
         ),
@@ -104,7 +109,7 @@ class _SaveState extends State<SavePage> {
               context: context,
               builder: (context) => _buildDiscardConfirmDialog()),
           child: Text(
-            'Discard',
+            AppLocalizations.of(context)!.delete,
             style: TextStyle(
                 fontSize: 20.adaptedFontSize,
                 color: Theme.of(context).primaryColor,
@@ -126,7 +131,7 @@ class _SaveState extends State<SavePage> {
         onChanged: (String value) {
           selectedFileName = value;
         },
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
             errorBorder:
                 OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
             focusedErrorBorder:
@@ -137,11 +142,11 @@ class _SaveState extends State<SavePage> {
                 borderSide: BorderSide(color: Color(0xFFEDEDF5))),
             fillColor: Colors.white,
             filled: true,
-            hintText: "RecordName",
+            hintText: AppLocalizations.of(context)!.record_name,
             hintStyle: TextStyle(color: Color(0xFFC2C8D2))),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'You need to name it';
+            return AppLocalizations.of(context)!.you_need_to_name;
           }
           return null;
         },
@@ -163,14 +168,13 @@ class _SaveState extends State<SavePage> {
               SizedBox(height: 33.adaptedHeight),
               Image.asset("assets/trash_icon.png"),
               SizedBox(height: 17.adaptedHeight),
-              Text("Want to delete?",
+              Text(AppLocalizations.of(context)!.want_delete,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 22.adaptedFontSize,
                       color: Color(0xFF2B3A51),
                       fontWeight: FontWeight.w700)),
-              Text(
-                  "Are you sure want to delete the file?\nYou will not be able to recover it.",
+              Text(AppLocalizations.of(context)!.delete_confirm_text,
                   textAlign: TextAlign.center),
               SizedBox(height: 34.adaptedHeight),
               FilledButton(
@@ -189,7 +193,7 @@ class _SaveState extends State<SavePage> {
                           BorderRadius.all(Radius.circular(60.adaptedRadius))),
                   backgroundColor: Theme.of(context).primaryColor,
                 ),
-                child: Text('Delete',
+                child: Text(AppLocalizations.of(context)!.delete,
                     style: TextStyle(
                         fontSize: 20.adaptedFontSize,
                         fontWeight: FontWeight.w600)),
@@ -198,7 +202,7 @@ class _SaveState extends State<SavePage> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Cancel',
+                  AppLocalizations.of(context)!.cancel,
                   style: TextStyle(
                       fontSize: 20.adaptedFontSize,
                       color: Theme.of(context).primaryColor,
@@ -214,14 +218,14 @@ class _SaveState extends State<SavePage> {
     return BlocBuilder<RemoFileBloc, RemoFileState>(
         builder: (context, remoFileState) {
       if (remoFileState is RecordSaved || remoFileState is RemoFileReady) {
-        return const Text("Saved!");
+        return Text(AppLocalizations.of(context)!.saved);
       }
 
       if (remoFileState is SavingRecord) {
-        return const Text("Saving...");
+        return Text(AppLocalizations.of(context)!.saving);
       }
 
-      return const Text("Want to save the record?");
+      return Text(AppLocalizations.of(context)!.want_save);
     });
   }
 }
