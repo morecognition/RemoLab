@@ -3,6 +3,7 @@
         android:label="Remorder"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        android:enableOnBackInvokedCallback="true"
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -45,9 +46,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!-- Needed for Android 11 or lower -->

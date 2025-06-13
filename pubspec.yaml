@@ -29,7 +29,7 @@ dependencies:
   flutter_bloc: ^8.0.1
   permission_handler: ^11.3.1
   path_provider: ^2.0.2
-  fl_chart: ^0.69.2
+  fl_chart: ^1.0.0
   design_sync: ^1.0.0
   vector_math: ^2.0.8
 
@@ -40,18 +40,19 @@ dependencies:
   device_info_plus: ^11.2.1
   rxdart: ^0.28.0
   delayed_tween_animation_builder: ^0.5.1
-  file_picker: ^8.3.3
+  file_picker: ^10.2.0
   csv: ^6.0.0
   flutter_cube: ^0.1.1
   flutter_localizations:
     sdk: flutter
   intl: any
+  flutter_blue_plus: 1.35.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.3
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

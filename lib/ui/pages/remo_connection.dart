@@ -1,6 +1,7 @@
 import 'package:design_sync/design_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/loading_ring.dart';
 
@@ -33,29 +34,38 @@ class RemoConnection extends StatelessWidget {
                     toolbarHeight: 65.adaptedHeight,
                     title: _getAppTitle(bluetoothState, remoState)),
                 backgroundColor: Colors.transparent,
-                body: Builder(builder: (context) {
-                  if (bluetoothState is BluetoothInitial) {
-                    context.read<BluetoothBloc>().add(OnStartDiscovery());
-                  }
+                body: FutureBuilder<bool>(
+                    future: checkBluetoothIsOn(),
+                    builder: (context, AsyncSnapshot<bool> snapshot) {
+                      if (bluetoothState is BluetoothInitial) {
+                        context.read<BluetoothBloc>().add(OnStartDiscovery());
+                      }
 
-                  if (remoState is Disconnected) {
-                    if (bluetoothState is DiscoveringDevices) {
-                      return _buildWaitingWidget();
-                    } else if (bluetoothState is DiscoveredDevices) {
-                      return _buildDeviceListWidget(context, bluetoothState);
-                    } else {
-                      return Text("$bluetoothState");
-                    }
-                  } else if (remoState is Connecting) {
-                    return _buildWaitingWidget();
-                  } else if (remoState is Connected) {
-                    return _buildParingSuccessfulWidget(context);
-                  } else if (remoState is ConnectionError) {
-                    return _buildParingFailedWidget(context);
-                  } else {
-                    return Text("$remoState");
-                  }
-                })),
+                      if (remoState is Disconnected) {
+                        var isBluetoothOn = snapshot.data!;
+                        if (!isBluetoothOn) {
+                          return _buildParingFailedWidget(context);
+                        }
+                        if (bluetoothState is DiscoveringDevices) {
+                          return _buildWaitingWidget();
+                        } else if (bluetoothState is DiscoveredDevices) {
+                          return _buildDeviceListWidget(
+                              context, bluetoothState);
+                        } else if (bluetoothState is DiscoveryError) {
+                          return _buildParingFailedWidget(context);
+                        } else {
+                          return Text("$bluetoothState");
+                        }
+                      } else if (remoState is Connecting) {
+                        return _buildWaitingWidget();
+                      } else if (remoState is Connected) {
+                        return _buildParingSuccessfulWidget(context);
+                      } else if (remoState is ConnectionError) {
+                        return _buildParingFailedWidget(context);
+                      } else {
+                        return Text("$remoState");
+                      }
+                    })),
           ],
         );
       });
@@ -63,25 +73,33 @@ class RemoConnection extends StatelessWidget {
   }
 
   Widget _getAppTitle(BluetoothState bluetoothState, RemoState remoState) {
-    return Builder(builder: (context) {
-      if (remoState is Disconnected) {
-        if (bluetoothState is DiscoveringDevices) {
-          return Text(AppLocalizations.of(context)!.looking_for_remo);
-        } else if (bluetoothState is DiscoveredDevices) {
-          return Text(AppLocalizations.of(context)!.choose_device);
-        } else {
-          return Text("$bluetoothState");
-        }
-      } else if (remoState is Connecting) {
-        return Text(AppLocalizations.of(context)!.pairing);
-      } else if (remoState is Connected) {
-        return Text(AppLocalizations.of(context)!.pairing_successful);
-      } else if (remoState is ConnectionError) {
-        return Text(AppLocalizations.of(context)!.pairing_fail);
-      } else {
-        return Text("$remoState");
-      }
-    });
+    return FutureBuilder<bool>(
+        future: checkBluetoothIsOn(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (remoState is Disconnected) {
+            var isBluetoothOn = snapshot.data!;
+            if (!isBluetoothOn) {
+              return Text(AppLocalizations.of(context)!.pairing_fail);
+            }
+            if (bluetoothState is DiscoveringDevices) {
+              return Text(AppLocalizations.of(context)!.looking_for_remo);
+            } else if (bluetoothState is DiscoveredDevices) {
+              return Text(AppLocalizations.of(context)!.choose_device);
+            } else if (bluetoothState is DiscoveryError) {
+              return Text(AppLocalizations.of(context)!.pairing_fail);
+            } else {
+              return Text("$bluetoothState");
+            }
+          } else if (remoState is Connecting) {
+            return Text(AppLocalizations.of(context)!.pairing);
+          } else if (remoState is Connected) {
+            return Text(AppLocalizations.of(context)!.pairing_successful);
+          } else if (remoState is ConnectionError) {
+            return Text(AppLocalizations.of(context)!.pairing_fail);
+          } else {
+            return Text("$remoState");
+          }
+        });
   }
 
   Widget _buildWaitingWidget() {
@@ -179,5 +197,9 @@ class RemoConnection extends StatelessWidget {
                 fontSize: 20.adaptedFontSize, fontWeight: FontWeight.w600)),
       ),
     ]));
+  }
+
+  Future<bool> checkBluetoothIsOn() async {
+    return await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
   }
 }
