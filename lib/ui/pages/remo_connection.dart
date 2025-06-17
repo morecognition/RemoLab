@@ -49,8 +49,12 @@ class RemoConnection extends StatelessWidget {
                         if (bluetoothState is DiscoveringDevices) {
                           return _buildWaitingWidget();
                         } else if (bluetoothState is DiscoveredDevices) {
-                          return _buildDeviceListWidget(
-                              context, bluetoothState);
+                          if (bluetoothState.deviceNames.isEmpty) {
+                            return _buildParingFailedWidget(context);
+                          } else {
+                            return _buildDeviceListWidget(
+                                context, bluetoothState);
+                          }
                         } else if (bluetoothState is DiscoveryError) {
                           return _buildParingFailedWidget(context);
                         } else {
@@ -84,7 +88,11 @@ class RemoConnection extends StatelessWidget {
             if (bluetoothState is DiscoveringDevices) {
               return Text(AppLocalizations.of(context)!.looking_for_remo);
             } else if (bluetoothState is DiscoveredDevices) {
-              return Text(AppLocalizations.of(context)!.choose_device);
+              if (bluetoothState.deviceNames.isEmpty) {
+                return Text(AppLocalizations.of(context)!.pairing_fail);
+              } else {
+                return Text(AppLocalizations.of(context)!.choose_device);
+              }
             } else if (bluetoothState is DiscoveryError) {
               return Text(AppLocalizations.of(context)!.pairing_fail);
             } else {
@@ -161,15 +169,18 @@ class RemoConnection extends StatelessWidget {
       Navigator.pushReplacementNamed(context, "/home");
     });
     return Center(
-      child: Image.asset(
+        child: Column(children: [
+      SizedBox(height: 200.adaptedHeight),
+      Image.asset(
         'assets/remo_success.png',
       ),
-    );
+    ]));
   }
 
   Widget _buildParingFailedWidget(BuildContext context) {
     return Center(
         child: Column(children: [
+      SizedBox(height: 200.adaptedHeight),
       Image.asset(
         'assets/remo_fail.png',
       ),
@@ -187,7 +198,7 @@ class RemoConnection extends StatelessWidget {
             343.adaptedWidth,
             48.adaptedHeight,
           ),
-          shape: ContinuousRectangleBorder(
+          shape: RoundedRectangleBorder(
               borderRadius:
                   BorderRadius.all(Radius.circular(24.adaptedRadius))),
           backgroundColor: Theme.of(context).primaryColor,
