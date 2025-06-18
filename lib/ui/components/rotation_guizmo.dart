@@ -1,14 +1,9 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 
-import 'package:design_sync/design_sync.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'package:flutter_remo/flutter_remo.dart';
-import 'package:remorder/bloc/chart/chart_bloc.dart';
 
 class RotationGizmo extends StatefulWidget {
   @override
@@ -52,15 +47,14 @@ class _RotationGizmoState extends State<RotationGizmo> {
 
     widget.imuDataStream
         .first
-        .then((imuData) => _lastTimestamp = imuData.timestamp);
+        .then((imuData) => _lastTimestamp = DateTime.timestamp());
 
     _imuStreamSubscription = widget.imuDataStream.listen(
       (imuData) {
         setState(
           () {
-            var deltaTime = (imuData.timestamp - _lastTimestamp) / 1000;
+            var deltaTime = DateTime.timestamp().difference(_lastTimestamp).inMilliseconds.toDouble() / 1000;
 
-            var velocity = Vector3(0, 10, 0);
             _smoothVelocity = _smoothVelocity * alpha + Vector3(imuData.angularVelocity.x, imuData.angularVelocity.y, imuData.angularVelocity.z) * (1 - alpha);
             //_rotation += _smoothVelocity * rotationSpeed * deltaTime;
 
@@ -71,12 +65,13 @@ class _RotationGizmoState extends State<RotationGizmo> {
             //var delta = angularVelocityToQuaternion(_smoothVelocity * degrees2Radians, deltaTime);
             //_rotation = _rotation * delta;
             //_rotation = _rotation.normalized();
+            
             _rotation +=  _smoothVelocity * deltaTime * rotationSpeed;
             _cube.rotation.setFrom(_rotation);
 
             _cube.updateTransform();
 
-            _lastTimestamp = imuData.timestamp;
+            _lastTimestamp = DateTime.timestamp();
           },
         );
       },
@@ -118,12 +113,12 @@ class _RotationGizmoState extends State<RotationGizmo> {
   }
 
   static const double alpha = 0;
-  static const double rotationSpeed = 0.1;
+  static const double rotationSpeed = 5;
 
   late Object _cube;
   late Vector3 _rotation;
   late Vector3 _smoothVelocity;
-  late double _lastTimestamp;
+  late DateTime _lastTimestamp;
 
   late final StreamSubscription<ImuData> _imuStreamSubscription;
 }

@@ -8,7 +8,6 @@ import 'package:remorder/ui/components/imu_data_visualization.dart';
 import 'package:remorder/ui/components/rotation_guizmo.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../components/data_chart.dart';
 
 class ImuDebug extends StatelessWidget {
   const ImuDebug({super.key});
@@ -46,13 +45,17 @@ class ImuDebug extends StatelessWidget {
 
           return Center(
               child: Stack(
-                children: [
-                  ImuDataVisualization(imuDataStream: remoState is TransmissionStarted ? remoState.imuDataStream : Stream.empty()),
-                  RotationGizmo(imuDataStream: remoState is TransmissionStarted ? remoState.imuDataStream : Stream.empty()),
-                ],
-              )
-          );
-
+            children: [
+              ImuDataVisualization(
+                  imuDataStream: remoState is TransmissionStarted
+                      ? remoState.imuDataStream
+                      : Stream.empty()),
+              RotationGizmo(
+                  imuDataStream: remoState is TransmissionStarted
+                      ? remoState.imuDataStream
+                      : Stream.empty()),
+            ],
+          ));
         },
       ),
     );
