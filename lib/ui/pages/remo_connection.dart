@@ -41,7 +41,8 @@ class RemoConnection extends StatelessWidget {
                       }
 
                       if (remoState is Disconnected) {
-                        var isBluetoothOn = snapshot.data != null && snapshot.data!;
+                        var isBluetoothOn =
+                            snapshot.data != null && snapshot.data!;
                         if (!isBluetoothOn) {
                           return _buildParingFailedWidget(context);
                         }
@@ -79,33 +80,36 @@ class RemoConnection extends StatelessWidget {
     return FutureBuilder<bool>(
         future: checkBluetoothIsOn(),
         builder: (context, AsyncSnapshot<bool> snapshot) {
-          if (remoState is Disconnected) {
-            var isBluetoothOn = snapshot.data != null && snapshot.data!;
-            if (!isBluetoothOn) {
-              return Text(AppLocalizations.of(context)!.pairing_fail);
-            }
-            if (bluetoothState is DiscoveringDevices) {
-              return Text(AppLocalizations.of(context)!.looking_for_remo);
-            } else if (bluetoothState is DiscoveredDevices) {
-              if (bluetoothState.deviceNames.isEmpty) {
+          if (snapshot.hasData) {
+            if (remoState is Disconnected) {
+              var isBluetoothOn = snapshot.data != null && snapshot.data!;
+              if (!isBluetoothOn) {
+                return Text(AppLocalizations.of(context)!.pairing_fail);
+              }
+              if (bluetoothState is DiscoveringDevices) {
+                return Text(AppLocalizations.of(context)!.looking_for_remo);
+              } else if (bluetoothState is DiscoveredDevices) {
+                if (bluetoothState.deviceNames.isEmpty) {
+                  return Text(AppLocalizations.of(context)!.pairing_fail);
+                } else {
+                  return Text(AppLocalizations.of(context)!.choose_device);
+                }
+              } else if (bluetoothState is DiscoveryError) {
                 return Text(AppLocalizations.of(context)!.pairing_fail);
               } else {
-                return Text(AppLocalizations.of(context)!.choose_device);
+                return Text("$bluetoothState");
               }
-            } else if (bluetoothState is DiscoveryError) {
+            } else if (remoState is Connecting) {
+              return Text(AppLocalizations.of(context)!.pairing);
+            } else if (remoState is Connected) {
+              return Text(AppLocalizations.of(context)!.pairing_successful);
+            } else if (remoState is ConnectionError) {
               return Text(AppLocalizations.of(context)!.pairing_fail);
             } else {
-              return Text("$bluetoothState");
+              return Text("$remoState");
             }
-          } else if (remoState is Connecting) {
-            return Text(AppLocalizations.of(context)!.pairing);
-          } else if (remoState is Connected) {
-            return Text(AppLocalizations.of(context)!.pairing_successful);
-          } else if (remoState is ConnectionError) {
-            return Text(AppLocalizations.of(context)!.pairing_fail);
-          } else {
-            return Text("$remoState");
           }
+          return Container();
         });
   }
 
