@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:design_sync/design_sync.dart';
+import 'package:remorder/ui/pages/contractions_page.dart';
 import 'package:remorder/ui/pages/home.dart';
 import 'package:remorder/ui/pages/imu_debug.dart';
 import 'package:remorder/ui/pages/paring_page.dart';
@@ -98,6 +99,7 @@ class MyApp extends StatelessWidget {
               '/pairing/connection': (context) => const RemoConnection(),
               '/home': (context) => const Home(),
               '/remo_transmission': (context) => const RemoTransmission(),
+              '/remo_transmission/contractions': (context) => const ContractionsPage(),
               '/save_page': (context) => const SavePage(),
               '/playback_page': (context) => const RemoPlayback(),
               '/imu_debug': (context) => const ImuDebug(),

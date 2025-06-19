@@ -200,7 +200,7 @@ class RemoTransmission extends StatelessWidget {
           FilledButton(
             onPressed: () => chartState is RadarState
                 ? null
-                : context.read<ChartBloc>().add(SwitchChart()),
+                : Navigator.pushNamed(context, "/remo_transmission/contractions"),
             style: FilledButton.styleFrom(
               fixedSize: Size(
                 164.adaptedWidth,

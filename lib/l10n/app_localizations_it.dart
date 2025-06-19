@@ -109,4 +109,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get delete_confirm_text =>
       'Sicuro di voler eliminare il file?\nNon potrai recuperarlo.';
+
+  @override
+  String get feed_back => 'Feed back';
 }

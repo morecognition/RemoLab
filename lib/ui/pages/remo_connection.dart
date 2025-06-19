@@ -12,7 +12,6 @@ class RemoConnection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //return _buildParingFailedWidget(context);
     return BlocBuilder<BluetoothBloc, BluetoothState>(
         builder: (context, bluetoothState) {
       return BlocBuilder<RemoBloc, RemoState>(builder: (context, remoState) {
@@ -42,7 +41,7 @@ class RemoConnection extends StatelessWidget {
                       }
 
                       if (remoState is Disconnected) {
-                        var isBluetoothOn = snapshot.data!;
+                        var isBluetoothOn = snapshot.data != null && snapshot.data!;
                         if (!isBluetoothOn) {
                           return _buildParingFailedWidget(context);
                         }
@@ -81,7 +80,7 @@ class RemoConnection extends StatelessWidget {
         future: checkBluetoothIsOn(),
         builder: (context, AsyncSnapshot<bool> snapshot) {
           if (remoState is Disconnected) {
-            var isBluetoothOn = snapshot.data!;
+            var isBluetoothOn = snapshot.data != null && snapshot.data!;
             if (!isBluetoothOn) {
               return Text(AppLocalizations.of(context)!.pairing_fail);
             }

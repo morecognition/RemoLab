@@ -140,6 +140,8 @@ class PairingPage extends StatelessWidget {
         bluetoothConnect.isGranted &&
         locationUse.isGranted &&
         context.mounted) {
+      //Set bt state to initial
+      context.read<BluetoothBloc>().add(OnReset());
       Navigator.pushNamed(context, '/pairing/connection');
     } else {
       showDialog(

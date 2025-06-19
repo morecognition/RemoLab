@@ -31,5 +31,6 @@
   "record_name": "NomeSalvataggio",
   "you_need_to_name": "Dai un nome al file",
   "want_delete": "Vuoi eliminarlo?",
-  "delete_confirm_text": "Sicuro di voler eliminare il file?\nNon potrai recuperarlo."
+  "delete_confirm_text": "Sicuro di voler eliminare il file?\nNon potrai recuperarlo.",
+  "feed_back": "Feed back"
 }

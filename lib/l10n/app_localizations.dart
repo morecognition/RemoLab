@@ -295,6 +295,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure want to delete the file?\nYou will not be able to recover it.'**
   String get delete_confirm_text;
+
+  /// No description provided for @feed_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Feed back'**
+  String get feed_back;
 }
 
 class _AppLocalizationsDelegate

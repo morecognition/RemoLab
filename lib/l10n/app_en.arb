@@ -31,5 +31,6 @@
   "record_name": "RecordName",
   "you_need_to_name": "You need to name it",
   "want_delete": "Want to delete?",
-  "delete_confirm_text": "Are you sure want to delete the file?\nYou will not be able to recover it."
+  "delete_confirm_text": "Are you sure want to delete the file?\nYou will not be able to recover it.",
+  "feed_back": "Feed back"
 }
