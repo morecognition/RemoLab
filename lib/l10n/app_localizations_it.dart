@@ -67,10 +67,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get data_visualization => 'Visualizazione dati';
 
   @override
-  String get graph_1 => 'Grafo 1';
+  String get graph_1 => 'Grafo';
 
   @override
-  String get graph_2 => 'Grafo 2';
+  String get graph_2 => 'Feedback';
 
   @override
   String get want_save => 'Vuoi salvare la registrazione?';
@@ -112,4 +112,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get feed_back => 'Feed back';
+
+  @override
+  String get start_calibrating => 'Inizia calibrazione';
+
+  @override
+  String get pre_calibration_message =>
+      'Rilassa il muscolo e\ninizia la calibrazione';
+
+  @override
+  String get rest_calibration_message =>
+      'Rilassa il muscolo,\nstiamo registrando l\'attvità a riposo\nper 5 secondi...';
+
+  @override
+  String get max_calibration_message =>
+      'Fai l\'esercizio al massimo della\n tua forza per 3 secondi...';
+
+  @override
+  String get biofeedback_message =>
+      'Attiva il muscolo come\nindicato dal terapista,\nil movimento sullo schermo\nsegue la tua attivazione muscolare';
 }

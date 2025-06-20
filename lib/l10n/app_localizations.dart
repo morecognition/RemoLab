@@ -215,13 +215,13 @@ abstract class AppLocalizations {
   /// No description provided for @graph_1.
   ///
   /// In en, this message translates to:
-  /// **'Graph 1'**
+  /// **'Graph'**
   String get graph_1;
 
   /// No description provided for @graph_2.
   ///
   /// In en, this message translates to:
-  /// **'Graph 2'**
+  /// **'Feedback'**
   String get graph_2;
 
   /// No description provided for @want_save.
@@ -301,6 +301,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feed back'**
   String get feed_back;
+
+  /// No description provided for @start_calibrating.
+  ///
+  /// In en, this message translates to:
+  /// **'Start calibrating'**
+  String get start_calibrating;
+
+  /// No description provided for @pre_calibration_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Relax the muscle and\nstart calibrating'**
+  String get pre_calibration_message;
+
+  /// No description provided for @rest_calibration_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Relax the muscle,\nwe are recording the resting activity\nfor 5 seconds...'**
+  String get rest_calibration_message;
+
+  /// No description provided for @max_calibration_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do the exercise at max of\nyour strength for 3 seconds...'**
+  String get max_calibration_message;
+
+  /// No description provided for @biofeedback_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate the muscle as\nthe therapist told you,\nthe movement on the screen\ndisplays the muscular activation'**
+  String get biofeedback_message;
 }
 
 class _AppLocalizationsDelegate
