@@ -169,7 +169,7 @@ class RemoConnection extends StatelessWidget {
   Widget _buildParingSuccessfulWidget(BuildContext context) {
     Future.delayed(Duration(seconds: 2), () {
       Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, "/home");
+      Navigator.pushNamed(context, "/home");
     });
     return Center(
         child: Column(children: [
