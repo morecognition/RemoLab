@@ -49,18 +49,14 @@ class ContractionsPage extends StatelessWidget {
             case Inactive _:
               return _buildPreCalibrationBody(context, remoState);
 
-            case RecordingBaseValue _:
-              return _buildRestCalibrationBody(context);
+            case RecordingBaseValue recordingBaseState:
+              return _buildRestCalibrationBody(context, recordingBaseState);
 
-            case RecordingMvc _:
-              return _buildMaxCalibrationBody(context);
+            case RecordingMvc recordingMvcState:
+              return _buildMaxCalibrationBody(context, recordingMvcState);
 
             case Active active:
-              return StreamBuilder(
-                  stream: active.cyclicFeedbackStream,
-                  builder: (context, value) {
-                    return _buildBiofeedbackBody(context, value);
-                  });
+              return _buildBiofeedbackBody(context, active);
           }
 
           return Container();
@@ -111,97 +107,132 @@ class ContractionsPage extends StatelessWidget {
         ]));
   }
 
-  Widget _buildRestCalibrationBody(BuildContext context) {
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-          SizedBox(height: 100.adaptedHeight),
-          Image.asset(
-            'assets/remo_icon.png',
-          ),
-          Text(
-            AppLocalizations.of(context)!.rest_calibration_message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 18.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Colors.black),
-          ),
-          SizedBox(height: 30.adaptedHeight),
-          SizedBox(
-              width: 200.adaptedWidth,
-              child: LinearProgressIndicator(
-                  value: 0.7,
-                  //Todo: to be linked to 5 secs timer progress, change body state at the end
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                  minHeight: 40.adaptedHeight)),
-          SizedBox(height: 70.adaptedHeight),
-        ]));
+  Widget _buildRestCalibrationBody(
+      BuildContext context, RecordingBaseValue state) {
+    return StreamBuilder(
+        stream: state.progressStream,
+        builder: (context, progressValue) {
+          return StreamBuilder(
+              stream: state.baseValueStream,
+              builder: (context, baseValue) {
+                return Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 20,
+                        children: [
+                      SizedBox(height: 100.adaptedHeight),
+                      Image.asset(
+                        'assets/remo_icon.png',
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.rest_calibration_message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 18.adaptedFontSize,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black),
+                      ),
+                      SizedBox(height: 30.adaptedHeight),
+                      SizedBox(
+                          width: 200.adaptedWidth,
+                          child: LinearProgressIndicator(
+                              value: baseValue.data,
+                              backgroundColor: Colors.grey[300],
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                              minHeight: 40.adaptedHeight)),
+                      SizedBox(
+                          width: 200.adaptedWidth,
+                          child: LinearProgressIndicator(
+                              value: progressValue.data,
+                              backgroundColor: Colors.grey[300],
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                              minHeight: 20.adaptedHeight)),
+                      SizedBox(height: 70.adaptedHeight),
+                    ]));
+              });
+        });
   }
 
-  Widget _buildMaxCalibrationBody(BuildContext context) {
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-          SizedBox(height: 100.adaptedHeight),
-          Image.asset(
-            'assets/remo_icon.png',
-          ),
-          Text(
-            AppLocalizations.of(context)!.max_calibration_message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 18.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Colors.black),
-          ),
-          SizedBox(height: 30.adaptedHeight),
-          SizedBox(
-              width: 200.adaptedWidth,
-              child: LinearProgressIndicator(
-                  value: 0.3,
-                  //Todo: to be linked and normalized to user muscle strength, change body state after 3 seconds
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                  minHeight: 40.adaptedHeight)),
-          SizedBox(height: 70.adaptedHeight),
-        ]));
+  Widget _buildMaxCalibrationBody(BuildContext context, RecordingMvc state) {
+    return StreamBuilder(
+        stream: state.progressStream,
+        builder: (context, progressValue) {
+          return StreamBuilder(
+              stream: state.mvcStream,
+              builder: (context, mvcValue) {
+                return Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 20,
+                        children: [
+                      SizedBox(height: 100.adaptedHeight),
+                      Image.asset(
+                        'assets/remo_icon.png',
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.max_calibration_message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 18.adaptedFontSize,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black),
+                      ),
+                      SizedBox(height: 30.adaptedHeight),
+                      SizedBox(
+                          width: 200.adaptedWidth,
+                          child: LinearProgressIndicator(
+                              value: mvcValue.data,
+                              backgroundColor: Colors.grey[300],
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                              minHeight: 40.adaptedHeight)),
+                      SizedBox(
+                          width: 200.adaptedWidth,
+                          child: LinearProgressIndicator(
+                              value: progressValue.data,
+                              backgroundColor: Colors.grey[300],
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                              minHeight: 20.adaptedHeight)),
+                      SizedBox(height: 70.adaptedHeight),
+                    ]));
+              });
+        });
   }
 
-  Widget _buildBiofeedbackBody(
-      BuildContext context, AsyncSnapshot<double> data) {
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-          SizedBox(height: 100.adaptedHeight),
-          Image.asset(
-            'assets/remo_icon.png',
-          ),
-          Text(
-            AppLocalizations.of(context)!.biofeedback_message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 18.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Colors.black),
-          ),
-          SizedBox(height: 30.adaptedHeight),
-          SizedBox(
-              width: 200.adaptedWidth,
-              child: LinearProgressIndicator(
-                  value: 0.3,
-                  //Todo: to be linked to user current muscle strength
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                  minHeight: 40.adaptedHeight)),
-          SizedBox(height: 70.adaptedHeight),
-        ]));
+  Widget _buildBiofeedbackBody(BuildContext context, Active state) {
+    return StreamBuilder(
+        stream: state.cyclicFeedbackStream,
+        builder: (context, feedbackValue) {
+          return Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 20,
+                  children: [
+                SizedBox(height: 100.adaptedHeight),
+                Image.asset(
+                  'assets/remo_icon.png',
+                ),
+                Text(
+                  AppLocalizations.of(context)!.biofeedback_message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18.adaptedFontSize,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black),
+                ),
+                SizedBox(height: 30.adaptedHeight),
+                SizedBox(
+                    width: 200.adaptedWidth,
+                    child: LinearProgressIndicator(
+                        value: feedbackValue.data,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        minHeight: 40.adaptedHeight)),
+                SizedBox(height: 70.adaptedHeight),
+              ]));
+        });
   }
 }
