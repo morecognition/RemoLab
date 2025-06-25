@@ -18,8 +18,8 @@
   "pairing_successful": "Pairing successful",
   "pairing_fail": "Pairing failed",
   "data_visualization": "Data visualization",
-  "graph_1": "Graph 1",
-  "graph_2": "Graph 2",
+  "graph_1": "Graph",
+  "graph_2": "Feedback",
   "want_save": "Want to save the record?",
   "save": "Save",
   "saving": "Saving...",
@@ -32,5 +32,10 @@
   "you_need_to_name": "You need to name it",
   "want_delete": "Want to delete?",
   "delete_confirm_text": "Are you sure want to delete the file?\nYou will not be able to recover it.",
-  "feed_back": "Feed back"
+  "feed_back": "Feed back",
+  "start_calibrating": "Start calibrating",
+  "pre_calibration_message": "Relax the muscle and\nstart calibrating",
+  "rest_calibration_message": "Relax the muscle,\nwe are recording the resting activity\nfor 5 seconds...",
+  "max_calibration_message": "Do the exercise at max of\nyour strength for 3 seconds...",
+  "biofeedback_message": "Activate the muscle as\nthe therapist told you,\nthe movement on the screen\ndisplays the muscular activation"
 }

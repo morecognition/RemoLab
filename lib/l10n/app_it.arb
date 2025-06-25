@@ -18,8 +18,8 @@
   "pairing_successful": "Configurazione con successo",
   "pairing_fail": "Configurazione fallita",
   "data_visualization": "Visualizazione dati",
-  "graph_1": "Grafo 1",
-  "graph_2": "Grafo 2",
+  "graph_1": "Grafo",
+  "graph_2": "Feedback",
   "want_save": "Vuoi salvare la registrazione?",
   "save": "Salva",
   "saving": "Salvando...",
@@ -32,5 +32,10 @@
   "you_need_to_name": "Dai un nome al file",
   "want_delete": "Vuoi eliminarlo?",
   "delete_confirm_text": "Sicuro di voler eliminare il file?\nNon potrai recuperarlo.",
-  "feed_back": "Feed back"
+  "feed_back": "Feed back",
+  "start_calibrating": "Inizia calibrazione",
+  "pre_calibration_message": "Rilassa il muscolo e\ninizia la calibrazione",
+  "rest_calibration_message": "Rilassa il muscolo,\nstiamo registrando l'attvità a riposo\nper 5 secondi...",
+  "max_calibration_message": "Fai l'esercizio al massimo della\n tua forza per 3 secondi...",
+  "biofeedback_message": "Attiva il muscolo come\nindicato dal terapista,\nil movimento sullo schermo\nsegue la tua attivazione muscolare"
 }
