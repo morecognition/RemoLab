@@ -14,13 +14,13 @@ class DataChart extends StatefulWidget {
     return _DataChartState();
   }
 
-  const DataChart({super.key,
-    required this.rmsDataStream,
-    this.colors,
-    this.showAll = false,
-    this.scrollSpeed = 0.1,
-    this.windowSizeInSeconds = 7
-  });
+  const DataChart(
+      {super.key,
+      required this.rmsDataStream,
+      this.colors,
+      this.showAll = false,
+      this.scrollSpeed = 0.1,
+      this.windowSizeInSeconds = 7});
 
   final Stream<RmsData> rmsDataStream;
   final bool showAll;
@@ -30,6 +30,28 @@ class DataChart extends StatefulWidget {
 }
 
 class _DataChartState extends State<DataChart> {
+  double xvalue = 0;
+  double step = 0.064;
+  double offset = 0;
+
+  // Number of samples to keep in the graph;
+  static const int _windowSize = 110;
+  // 8 is the number of EMG channels available in Remo.
+  static const int channels = 8;
+  late List<Queue<FlSpot>> _emgChannels;
+  final _radarEntries = [
+    const RadarEntry(value: 300),
+    const RadarEntry(value: 50),
+    const RadarEntry(value: 250),
+    const RadarEntry(value: 345),
+    const RadarEntry(value: 321),
+    const RadarEntry(value: 347),
+    const RadarEntry(value: 43),
+    const RadarEntry(value: 453),
+  ];
+
+  late final StreamSubscription<RmsData> rmsStreamSubscription;
+
   _DataChartState();
 
   @override
@@ -73,16 +95,18 @@ class _DataChartState extends State<DataChart> {
 
   Widget drawLineChart(double minY, double maxY) {
     var minX = (_emgChannels[0].first.x + offset).ceilToDouble();
-    var maxX = (_emgChannels[0].first.x + widget.windowSizeInSeconds + offset).floorToDouble();
+    var maxX = (_emgChannels[0].first.x + widget.windowSizeInSeconds + offset)
+        .floorToDouble();
 
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
-        if(!widget.showAll) {
+        if (!widget.showAll) {
           return;
         }
 
         setState(() {
-          offset = (offset - details.delta.dx * widget.scrollSpeed).clamp(0, _emgChannels[0].last.x - widget.windowSizeInSeconds);
+          offset = (offset - details.delta.dx * widget.scrollSpeed)
+              .clamp(0, _emgChannels[0].last.x - widget.windowSizeInSeconds);
         });
       },
       child: Stack(children: [
@@ -105,14 +129,40 @@ class _DataChartState extends State<DataChart> {
                 gridData: gridData,
                 rangeAnnotations: const RangeAnnotations(),
                 lineBarsData: [
-                  emgLine(0, widget.colors != null ? widget.colors![0] : Colors.red, minX + 1),
-                  emgLine(1, widget.colors != null ? widget.colors![1] : Colors.pink, minX + 1),
-                  emgLine(2, widget.colors != null ? widget.colors![2] : Colors.orange, minX + 1),
-                  emgLine(3, widget.colors != null ? widget.colors![3] : Colors.yellow, minX + 1),
-                  emgLine(4, widget.colors != null ? widget.colors![4] : Colors.green, minX + 1),
-                  emgLine(5, widget.colors != null ? widget.colors![5] : Colors.green.shade900, minX + 1),
-                  emgLine(6, widget.colors != null ? widget.colors![6] : Colors.blue, minX + 1),
-                  emgLine(7, widget.colors != null ? widget.colors![7] : Colors.grey, minX + 1),
+                  emgLine(
+                      0,
+                      widget.colors != null ? widget.colors![0] : Colors.red,
+                      minX + 1),
+                  emgLine(
+                      1,
+                      widget.colors != null ? widget.colors![1] : Colors.pink,
+                      minX + 1),
+                  emgLine(
+                      2,
+                      widget.colors != null ? widget.colors![2] : Colors.orange,
+                      minX + 1),
+                  emgLine(
+                      3,
+                      widget.colors != null ? widget.colors![3] : Colors.yellow,
+                      minX + 1),
+                  emgLine(
+                      4,
+                      widget.colors != null ? widget.colors![4] : Colors.green,
+                      minX + 1),
+                  emgLine(
+                      5,
+                      widget.colors != null
+                          ? widget.colors![5]
+                          : Colors.green.shade900,
+                      minX + 1),
+                  emgLine(
+                      6,
+                      widget.colors != null ? widget.colors![6] : Colors.blue,
+                      minX + 1),
+                  emgLine(
+                      7,
+                      widget.colors != null ? widget.colors![7] : Colors.grey,
+                      minX + 1),
                 ],
                 titlesData: titlesData,
                 borderData: borderData,
@@ -122,32 +172,33 @@ class _DataChartState extends State<DataChart> {
           ),
         ),
         Transform.translate(
-            offset: Offset(25, 10), child: Text("Microvolts", style: labelStyle))
+            offset: Offset(25, 10),
+            child: Text("Microvolts", style: labelStyle))
       ]),
     );
   }
 
   FlBorderData get borderData => FlBorderData(
-    show: true,
-    border: Border(
-      bottom: const BorderSide(color: Colors.transparent),
-      top: BorderSide(color: lineColor),
-      left: const BorderSide(color: Colors.transparent),
-      right: const BorderSide(color: Colors.transparent),
-    ),
-  );
+        show: true,
+        border: Border(
+          bottom: const BorderSide(color: Colors.transparent),
+          top: BorderSide(color: lineColor),
+          left: const BorderSide(color: Colors.transparent),
+          right: const BorderSide(color: Colors.transparent),
+        ),
+      );
 
   FlGridData get gridData => FlGridData(
-    show: true,
-    getDrawingHorizontalLine: (value) => FlLine(
-      color: lineColor,
-      strokeWidth: 1,
-    ),
-    getDrawingVerticalLine: (value) => FlLine(
-      color: lineColor,
-      strokeWidth: 1,
-    ),
-  );
+        show: true,
+        getDrawingHorizontalLine: (value) => FlLine(
+          color: lineColor,
+          strokeWidth: 1,
+        ),
+        getDrawingVerticalLine: (value) => FlLine(
+          color: lineColor,
+          strokeWidth: 1,
+        ),
+      );
 
   FlTitlesData get titlesData => FlTitlesData(
       leftTitles: AxisTitles(
@@ -185,7 +236,9 @@ class _DataChartState extends State<DataChart> {
   LineChartBarData emgLine(int emgIndex, Color color, double minValue) {
     return LineChartBarData(
       color: color,
-      spots: _emgChannels[emgIndex].where((spot) => spot.x >= minValue).toList(), //_emgChannels[emgIndex].toList(),
+      spots: _emgChannels[emgIndex]
+          .where((spot) => spot.x >= minValue)
+          .toList(), //_emgChannels[emgIndex].toList(),
       dotData: const FlDotData(show: false),
       isCurved: true,
       barWidth: 2,
@@ -198,9 +251,9 @@ class _DataChartState extends State<DataChart> {
 
     _emgChannels = List.generate(
       channels,
-          (integer) {
+      (integer) {
         var queue = ListQueue<FlSpot>();
-        var xvalue = -1.0;
+        xvalue = -1.0;
         for (var i = 0; i < (widget.showAll ? 0 : _windowSize); ++i, xvalue += step) {
           queue.add(FlSpot(xvalue, 0));
         }
@@ -209,13 +262,14 @@ class _DataChartState extends State<DataChart> {
     );
 
     // Listening to Remo.
+    
     rmsStreamSubscription = widget.rmsDataStream.listen(
-          (rmsData) {
+      (rmsData) {
         setState(
-              () {
+          () {
             // Adding EMG values to the chart's buffer.
             for (int i = 0; i < channels; ++i) {
-              if(!widget.showAll) {
+              if (!widget.showAll && _emgChannels[i].length >= _windowSize) {
                 _emgChannels[i].removeFirst();
               }
 
@@ -236,26 +290,4 @@ class _DataChartState extends State<DataChart> {
     super.dispose();
     rmsStreamSubscription.cancel();
   }
-
-  double xvalue = 0;
-  double step = 0.064;
-  double offset = 0;
-
-  // Number of samples to keep in the graph;
-  static const int _windowSize = 110;
-  // 8 is the number of EMG channels available in Remo.
-  static const int channels = 8;
-  late List<Queue<FlSpot>> _emgChannels;
-  final _radarEntries = [
-    const RadarEntry(value: 300),
-    const RadarEntry(value: 50),
-    const RadarEntry(value: 250),
-    const RadarEntry(value: 345),
-    const RadarEntry(value: 321),
-    const RadarEntry(value: 347),
-    const RadarEntry(value: 43),
-    const RadarEntry(value: 453),
-  ];
-
-  late final StreamSubscription<RmsData> rmsStreamSubscription;
 }
