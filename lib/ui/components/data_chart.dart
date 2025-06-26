@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:design_sync/design_sync.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -20,11 +21,17 @@ class DataChart extends StatefulWidget {
       this.colors,
       this.showAll = false,
       this.scrollSpeed = 0.1,
+      this.zoomStep = 50,
+      this.minZoomLevel = 50,
+      this.maxZoomLevel = 500,
       this.windowSizeInSeconds = 7});
 
   final Stream<RmsData> rmsDataStream;
   final bool showAll;
   final double scrollSpeed;
+  final double zoomStep;
+  final double minZoomLevel;
+  final double maxZoomLevel;
   final int windowSizeInSeconds;
   final List<Color>? colors;
 }
@@ -33,6 +40,8 @@ class _DataChartState extends State<DataChart> {
   double xvalue = 0;
   double step = 0.064;
   double offset = 0;
+  double maxY = 350;
+  double minY = 0;
 
   // Number of samples to keep in the graph;
   static const int _windowSize = 110;
@@ -56,9 +65,6 @@ class _DataChartState extends State<DataChart> {
 
   @override
   Widget build(BuildContext context) {
-    double minY = 0;
-    double maxY = 450;
-
     return BlocBuilder<ChartBloc, ChartState>(
       builder: ((context, state) {
         if (state is RadarState) {
@@ -173,7 +179,30 @@ class _DataChartState extends State<DataChart> {
         ),
         Transform.translate(
             offset: Offset(25, 10),
-            child: Text("Microvolts", style: labelStyle))
+            child: Text("Microvolts", style: labelStyle)),
+        Transform.translate(
+            offset: Offset(235.adaptedWidth, -3.adaptedHeight),
+            child: Row(
+              spacing: 0,
+              children: [
+                IconButton(
+                    icon: maxY - widget.zoomStep < widget.minZoomLevel ? SizedBox(width: 36.adaptedWidth) : Image.asset(
+                      "assets/plus_icon.png",
+                      width: 36.adaptedWidth,
+                      height: 26.adaptedHeight,
+                    ),
+                    onPressed: maxY - widget.zoomStep < widget.minZoomLevel ? null : _zoomIn,
+                ),
+                IconButton(
+                    icon: maxY + widget.zoomStep > widget.maxZoomLevel ? SizedBox(width: 36.adaptedWidth) : Image.asset(
+                      "assets/minus_icon.png",
+                      width: 36.adaptedWidth,
+                      height: 26.adaptedHeight,
+                    ),
+                    onPressed: maxY + widget.zoomStep > widget.maxZoomLevel ? null : _zoomOut,
+                ),
+              ],
+            )),
       ]),
     );
   }
@@ -190,6 +219,7 @@ class _DataChartState extends State<DataChart> {
 
   FlGridData get gridData => FlGridData(
         show: true,
+        horizontalInterval: (maxY - minY) / 10.0,
         getDrawingHorizontalLine: (value) => FlLine(
           color: lineColor,
           strokeWidth: 1,
@@ -205,11 +235,12 @@ class _DataChartState extends State<DataChart> {
           drawBelowEverything: false,
           axisNameWidget: null,
           sideTitles: SideTitles(
+              interval: (maxY - minY) / 10.0,
               showTitles: true,
               reservedSize: 30,
               getTitlesWidget: (value, title) => Transform.translate(
                   offset: const Offset(30, -10),
-                  child: Text(title.formattedValue, style: labelStyle)))),
+                  child: Text(value.round().toString(), style: labelStyle)))),
       rightTitles: const AxisTitles(),
       topTitles: const AxisTitles(),
       bottomTitles: AxisTitles(
@@ -254,7 +285,9 @@ class _DataChartState extends State<DataChart> {
       (integer) {
         var queue = ListQueue<FlSpot>();
         xvalue = -1.0;
-        for (var i = 0; i < (widget.showAll ? 0 : _windowSize); ++i, xvalue += step) {
+        for (var i = 0;
+            i < (widget.showAll ? 0 : _windowSize);
+            ++i, xvalue += step) {
           queue.add(FlSpot(xvalue, 0));
         }
         return queue;
@@ -262,7 +295,7 @@ class _DataChartState extends State<DataChart> {
     );
 
     // Listening to Remo.
-    
+
     rmsStreamSubscription = widget.rmsDataStream.listen(
       (rmsData) {
         setState(
@@ -285,6 +318,19 @@ class _DataChartState extends State<DataChart> {
     );
   }
 
+  void _zoomIn() {
+      setState(() {
+        maxY -= widget.zoomStep;
+        //maxY = clampDouble(maxY, widget.minZoomLevel, widget.minZoomLevel);
+      });
+  }
+
+  void _zoomOut() {
+      setState(() {
+        maxY += widget.zoomStep;
+        //maxY = clampDouble(maxY, widget.minZoomLevel, widget.minZoomLevel);
+      });
+  }
   @override
   void dispose() {
     super.dispose();
