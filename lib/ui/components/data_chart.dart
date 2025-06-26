@@ -20,6 +20,7 @@ class DataChart extends StatefulWidget {
       required this.rmsDataStream,
       this.colors,
       this.showAll = false,
+      this.isRecording = false,
       this.scrollSpeed = 0.1,
       this.zoomStep = 50,
       this.minZoomLevel = 50,
@@ -28,6 +29,7 @@ class DataChart extends StatefulWidget {
 
   final Stream<RmsData> rmsDataStream;
   final bool showAll;
+  final bool isRecording;
   final double scrollSpeed;
   final double zoomStep;
   final double minZoomLevel;
@@ -42,6 +44,11 @@ class _DataChartState extends State<DataChart> {
   double offset = 0;
   double maxY = 350;
   double minY = 0;
+
+  double recordingStart = -1;
+  double recordingEnd = -1;
+
+  bool wasRecording = false;
 
   // Number of samples to keep in the graph;
   static const int _windowSize = 110;
@@ -104,6 +111,24 @@ class _DataChartState extends State<DataChart> {
     var maxX = (_emgChannels[0].first.x + widget.windowSizeInSeconds + offset)
         .floorToDouble();
 
+    if(!wasRecording && widget.isRecording) {
+      recordingStart = maxX;
+    }
+
+    if(widget.isRecording) {
+      recordingEnd = maxX;
+    }
+
+    if(recordingStart < minX + 1){
+      recordingStart = minX + 1;
+    }
+
+    if(recordingStart == minX + 1 && recordingEnd <= recordingStart) {
+      recordingEnd = recordingStart = -1;
+    }
+
+    wasRecording = widget.isRecording;
+
     return GestureDetector(
       onHorizontalDragUpdate: (details) {
         if (!widget.showAll) {
@@ -130,10 +155,10 @@ class _DataChartState extends State<DataChart> {
                 maxY: maxY,
                 minX: minX,
                 maxX: maxX,
+                rangeAnnotations: rangeAnnotations,
                 lineTouchData: const LineTouchData(enabled: false),
                 clipData: const FlClipData.all(),
                 gridData: gridData,
-                rangeAnnotations: const RangeAnnotations(),
                 lineBarsData: [
                   emgLine(
                       0,
@@ -230,6 +255,16 @@ class _DataChartState extends State<DataChart> {
         ),
       );
 
+  RangeAnnotations get rangeAnnotations => RangeAnnotations(
+        verticalRangeAnnotations: [
+          VerticalRangeAnnotation(
+            x1: recordingStart,
+            x2: recordingEnd,
+            color: const Color.fromRGBO(249, 82, 79, 0.4),
+          ),
+        ],
+      );
+
   FlTitlesData get titlesData => FlTitlesData(
       leftTitles: AxisTitles(
           drawBelowEverything: false,
@@ -321,14 +356,12 @@ class _DataChartState extends State<DataChart> {
   void _zoomIn() {
       setState(() {
         maxY -= widget.zoomStep;
-        //maxY = clampDouble(maxY, widget.minZoomLevel, widget.minZoomLevel);
       });
   }
 
   void _zoomOut() {
       setState(() {
         maxY += widget.zoomStep;
-        //maxY = clampDouble(maxY, widget.minZoomLevel, widget.minZoomLevel);
       });
   }
   @override

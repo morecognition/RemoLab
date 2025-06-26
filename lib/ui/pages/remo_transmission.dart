@@ -131,15 +131,20 @@ class RemoTransmission extends StatelessWidget {
                         width: 343.adaptedWidth,
                         height: 432.adaptedHeight,
                         color: Colors.white,
-                        child: remoState is TransmissionStarted
-                            ? DataChart(
-                                rmsDataStream: remoState.rmsDataStream,
-                                colors: channelColors,
-                                key: Key("remo chart"))
-                            : DataChart(
-                                rmsDataStream: Stream.empty(),
-                                colors: channelColors,
-                                key: Key("empty chart")),
+                        child: BlocBuilder<RemoFileBloc, RemoFileState>(
+                          builder: (context, remoFileState) {
+                            return remoState is TransmissionStarted
+                                ? DataChart(
+                                    rmsDataStream: remoState.rmsDataStream,
+                                    colors: channelColors,
+                                    isRecording: remoFileState is Recording,
+                                    key: Key("remo chart"))
+                                : DataChart(
+                                    rmsDataStream: Stream.empty(),
+                                    colors: channelColors,
+                                    key: Key("empty chart"));
+                          }
+                        ),
                       ),
                       SizedBox(height: 15.adaptedHeight),
                       BlocBuilder<RemoFileBloc, RemoFileState>(
