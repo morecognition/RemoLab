@@ -5,8 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
+import 'package:remorder/ui/components/trapezoid_clip.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../components/ring_widget.dart';
 
 class ContractionsPage extends StatelessWidget {
   const ContractionsPage({super.key});
@@ -196,7 +198,7 @@ class ContractionsPage extends StatelessWidget {
                             color: Colors.black),
                       ),
                       Text(
-                        "00:05",
+                        "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.baseValueRecordingTime.inSeconds).ceil()}",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 26.adaptedFontSize,
@@ -206,11 +208,11 @@ class ContractionsPage extends StatelessWidget {
                       SizedBox(height: 10.adaptedHeight),
                       Stack(alignment: Alignment.center, children: [
                         Container(
-                          height: 246.adaptedFontSize,
-                          width: 246.adaptedFontSize,
+                          height: 246.adaptedHeight,
+                          width: 246.adaptedHeight,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(
-                                Radius.circular(246.adaptedFontSize)),
+                                Radius.circular(246.adaptedHeight)),
                             color: Colors.white,
                             gradient: RadialGradient(
                               radius: 0.5,
@@ -224,11 +226,11 @@ class ContractionsPage extends StatelessWidget {
                         ),
                         //Red Gradient
                         Container(
-                          height: 170.adaptedFontSize,
-                          width: 170.adaptedFontSize,
+                          height: 170.adaptedHeight,
+                          width: 170.adaptedHeight,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(
-                                Radius.circular(170.adaptedFontSize)),
+                                Radius.circular(170.adaptedHeight)),
                             color: Colors.white,
                             gradient:
                                 RadialGradient(radius: 0.5, colors: <Color>[
@@ -243,27 +245,25 @@ class ContractionsPage extends StatelessWidget {
                         //Blue Gradient
                         Image.asset("assets/mascotte_emoji.png"),
                         //Remo Icon
-                      ]),
-                      SizedBox(
-                          width: 200.adaptedWidth,
-                          child: LinearProgressIndicator(
-                              value: baseValue.data,
-                              backgroundColor: Colors.grey[300],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
-                              minHeight: 40.adaptedHeight)),
-                      SizedBox(
-                          width: 200.adaptedWidth,
-                          child: LinearProgressIndicator(
-                              value: progressValue.data,
-                              backgroundColor: Colors.grey[300],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
-                              minHeight: 20.adaptedHeight)),
-                      SizedBox(height: 0.adaptedHeight),
+                        _drawBaseValueRing(30.adaptedHeight, 246.adaptedHeight,
+                            baseValue.data ?? 0)
+                      ])
                     ]));
               });
         });
+  }
+
+  Widget _drawBaseValueRing(
+      double minSize, double maxSize, double progressValue) {
+    return SizedBox(
+      width: lerpDouble(minSize, maxSize, progressValue),
+      height: lerpDouble(minSize, maxSize, progressValue),
+      child: CustomPaint(
+        painter: RingPainter(
+            strokeWidth: 6,
+            color: progressValue > 0.6 ? Color(0xFFFA7572) : Color(0xFF80D0D4)),
+      ),
+    );
   }
 
   Widget _buildMaxCalibrationBody(BuildContext context, RecordingMvc state) {
@@ -275,39 +275,51 @@ class ContractionsPage extends StatelessWidget {
               builder: (context, mvcValue) {
                 return Center(
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 20,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        spacing: 5,
                         children: [
-                      SizedBox(height: 100.adaptedHeight),
-                      Image.asset(
-                        'assets/remo_icon.png',
+                      Text(
+                        AppLocalizations.of(context)!.step_2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 26.adaptedFontSize,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
                       ),
                       Text(
                         AppLocalizations.of(context)!.max_calibration_message,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 18.adaptedFontSize,
+                            fontSize: 15.adaptedFontSize,
                             fontWeight: FontWeight.w500,
                             color: Colors.black),
                       ),
-                      SizedBox(height: 30.adaptedHeight),
-                      SizedBox(
-                          width: 200.adaptedWidth,
-                          child: LinearProgressIndicator(
-                              value: mvcValue.data,
-                              backgroundColor: Colors.grey[300],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
-                              minHeight: 40.adaptedHeight)),
-                      SizedBox(
-                          width: 200.adaptedWidth,
-                          child: LinearProgressIndicator(
-                              value: progressValue.data,
-                              backgroundColor: Colors.grey[300],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
-                              minHeight: 20.adaptedHeight)),
-                      SizedBox(height: 70.adaptedHeight),
+                      SizedBox(height: 15.adaptedHeight),
+                      Text(
+                        "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.mvcRecordingTime.inSeconds).ceil()}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 26.adaptedFontSize,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF66A6AA)),
+                      ),
+                      SizedBox(height: 5.adaptedHeight),
+                      Image.asset(
+                          width: 150.adaptedHeight,
+                          height: 86.adaptedHeight,
+                          "assets/mascotte_rythm.png"),
+                      ClipPath(
+                        clipper: TrapezoidClip(),
+                        child: Container(
+                          color: Color(0xFFBEE2E5),
+                          width: 97.adaptedWidth,
+                          height: 240.adaptedHeight,
+                        ),
+                      ),
+                      Image.asset(
+                          width: 81.adaptedHeight,
+                          height: 40.adaptedHeight,
+                          "assets/mascotte_rythm_chill.png")
                     ]));
               });
         });
@@ -322,15 +334,20 @@ class ContractionsPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 20,
                   children: [
-                SizedBox(height: 100.adaptedHeight),
-                Image.asset(
-                  'assets/remo_icon.png',
+                SizedBox(height: 10.adaptedHeight),
+                Text(
+                  AppLocalizations.of(context)!.step_3,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 26.adaptedFontSize,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black),
                 ),
                 Text(
                   AppLocalizations.of(context)!.biofeedback_message,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 18.adaptedFontSize,
+                      fontSize: 15.adaptedFontSize,
                       fontWeight: FontWeight.w500,
                       color: Colors.black),
                 ),
@@ -349,53 +366,57 @@ class ContractionsPage extends StatelessWidget {
 
   Widget _buildPreExerciseBody(BuildContext context, RemoState remoState,
       String stepText, String message, VoidCallback? buttonCallback) {
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 20,
-            children: [
-          SizedBox(height: 60.adaptedHeight),
-          Text(
-            stepText,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 26.adaptedFontSize,
-                fontWeight: FontWeight.w600,
-                color: Colors.black),
-          ),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 15.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Colors.black),
-          ),
-          SizedBox(height: 20.adaptedHeight),
-          Image.asset(
-            'assets/wear_remo_2.png',
-          ),
-          SizedBox(height: 80.adaptedHeight),
-          FilledButton(
-              onPressed: buttonCallback,
-              style: FilledButton.styleFrom(
-                fixedSize: Size(
-                  343.adaptedWidth,
-                  48.adaptedHeight,
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(24.adaptedRadius))),
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.start,
+    return Padding(
+        padding: EdgeInsets.fromLTRB(17.adaptedWidth, 0, 17.adaptedWidth, 0),
+        child: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 20,
+                children: [
+              SizedBox(height: 60.adaptedHeight),
+              Text(
+                stepText,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 24.adaptedFontSize,
+                    fontSize: 26.adaptedFontSize,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              )),
-        ]));
+                    color: Colors.black),
+              ),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15.adaptedFontSize,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black),
+              ),
+              SizedBox(height: 20.adaptedHeight),
+              Transform.rotate(
+                  angle: 0.5,
+                  child: Image.asset(
+                    'assets/wear_remo_2.png',
+                  )),
+              SizedBox(height: 80.adaptedHeight),
+              FilledButton(
+                  onPressed: buttonCallback,
+                  style: FilledButton.styleFrom(
+                    fixedSize: Size(
+                      343.adaptedWidth,
+                      48.adaptedHeight,
+                    ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(24.adaptedRadius))),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.start,
+                    style: TextStyle(
+                        fontSize: 24.adaptedFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  )),
+            ])));
   }
 
   Widget _buildNextExerciseBody(BuildContext context, RemoState remoState,
@@ -405,7 +426,7 @@ class ContractionsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 20,
             children: [
-          SizedBox(height: 60.adaptedHeight),
+          SizedBox(height: 110.adaptedHeight),
           Image.asset(
             'assets/mascotte.png',
           ),
