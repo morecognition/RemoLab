@@ -305,32 +305,80 @@ abstract class AppLocalizations {
   /// No description provided for @start_calibrating.
   ///
   /// In en, this message translates to:
-  /// **'Start calibrating'**
+  /// **'Start'**
   String get start_calibrating;
 
   /// No description provided for @pre_calibration_message.
   ///
   /// In en, this message translates to:
-  /// **'Relax the muscle and\nstart calibrating'**
+  /// **'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.'**
   String get pre_calibration_message;
 
   /// No description provided for @rest_calibration_message.
   ///
   /// In en, this message translates to:
-  /// **'Relax the muscle,\nwe are recording the resting activity\nfor 5 seconds...'**
+  /// **'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.'**
   String get rest_calibration_message;
+
+  /// No description provided for @pre_max_calibration_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do the exercise at max of\nyour strength for 3 seconds.'**
+  String get pre_max_calibration_message;
 
   /// No description provided for @max_calibration_message.
   ///
   /// In en, this message translates to:
-  /// **'Do the exercise at max of\nyour strength for 3 seconds...'**
+  /// **'Do the exercise at max of\nyour strength for 3 seconds.'**
   String get max_calibration_message;
+
+  /// No description provided for @pre_biofeedback_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation'**
+  String get pre_biofeedback_message;
 
   /// No description provided for @biofeedback_message.
   ///
   /// In en, this message translates to:
-  /// **'Activate the muscle as\nthe therapist told you,\nthe movement on the screen\ndisplays the muscular activation'**
+  /// **'Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation'**
   String get biofeedback_message;
+
+  /// No description provided for @step_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1'**
+  String get step_1;
+
+  /// No description provided for @step_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2'**
+  String get step_2;
+
+  /// No description provided for @step_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 3'**
+  String get step_3;
+
+  /// No description provided for @next_exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Next exercise'**
+  String get next_exercise;
+
+  /// No description provided for @repeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get repeat;
+
+  /// No description provided for @exercise_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed!'**
+  String get exercise_completed;
 }
 
 class _AppLocalizationsDelegate

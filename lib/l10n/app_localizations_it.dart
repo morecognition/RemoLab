@@ -67,7 +67,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get data_visualization => 'Visualizazione dati';
 
   @override
-  String get graph_1 => 'Grafo';
+  String get graph_1 => 'Grafico';
 
   @override
   String get graph_2 => 'Feedback';
@@ -114,21 +114,47 @@ class AppLocalizationsIt extends AppLocalizations {
   String get feed_back => 'Feed back';
 
   @override
-  String get start_calibrating => 'Inizia calibrazione';
+  String get start_calibrating => 'Inizia';
 
   @override
   String get pre_calibration_message =>
-      'Rilassa il muscolo e\ninizia la calibrazione';
+      'Rilassa il muscolo.\nStiamo registrando l\'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.';
 
   @override
   String get rest_calibration_message =>
-      'Rilassa il muscolo,\nstiamo registrando l\'attvità a riposo\nper 5 secondi...';
+      'Rilassa il muscolo.\nStiamo registrando l\'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.';
+
+  @override
+  String get pre_max_calibration_message =>
+      'Contrai più che puoi il muscolo del braccio per 3 secondi.';
 
   @override
   String get max_calibration_message =>
-      'Fai l\'esercizio al massimo della\n tua forza per 3 secondi...';
+      'Contrai più che puoi il muscolo del braccio per 3 secondi.';
+
+  @override
+  String get pre_biofeedback_message =>
+      'Fai l\'esercizio come indicato dal terapista.\nIl movimento sullo schermo segue la tua attivazione muscolare';
 
   @override
   String get biofeedback_message =>
-      'Attiva il muscolo come\nindicato dal terapista,\nil movimento sullo schermo\nsegue la tua attivazione muscolare';
+      'Fai l\'esercizio come indicato dal terapista.\nIl movimento sullo schermo segue la tua attivazione muscolare';
+
+  @override
+  String get step_1 => 'Step 1';
+
+  @override
+  String get step_2 => 'Step 2';
+
+  @override
+  String get step_3 => 'Step 3';
+
+  @override
+  String get next_exercise => 'Prossimo esercizio';
+
+  @override
+  String get repeat => 'Ripeti';
+
+  @override
+  String get exercise_completed => 'Completato!';
 }

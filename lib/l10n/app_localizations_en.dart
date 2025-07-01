@@ -114,21 +114,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feed_back => 'Feed back';
 
   @override
-  String get start_calibrating => 'Start calibrating';
+  String get start_calibrating => 'Start';
 
   @override
   String get pre_calibration_message =>
-      'Relax the muscle and\nstart calibrating';
+      'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.';
 
   @override
   String get rest_calibration_message =>
-      'Relax the muscle,\nwe are recording the resting activity\nfor 5 seconds...';
+      'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.';
+
+  @override
+  String get pre_max_calibration_message =>
+      'Do the exercise at max of\nyour strength for 3 seconds.';
 
   @override
   String get max_calibration_message =>
-      'Do the exercise at max of\nyour strength for 3 seconds...';
+      'Do the exercise at max of\nyour strength for 3 seconds.';
+
+  @override
+  String get pre_biofeedback_message =>
+      'Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation';
 
   @override
   String get biofeedback_message =>
-      'Activate the muscle as\nthe therapist told you,\nthe movement on the screen\ndisplays the muscular activation';
+      'Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation';
+
+  @override
+  String get step_1 => 'Step 1';
+
+  @override
+  String get step_2 => 'Step 2';
+
+  @override
+  String get step_3 => 'Step 3';
+
+  @override
+  String get next_exercise => 'Next exercise';
+
+  @override
+  String get repeat => 'Repeat';
+
+  @override
+  String get exercise_completed => 'Completed!';
 }

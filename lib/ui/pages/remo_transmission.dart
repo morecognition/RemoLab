@@ -191,15 +191,15 @@ class RemoTransmission extends StatelessWidget {
                       BorderRadius.all(Radius.circular(25.adaptedRadius))),
               backgroundColor: chartState is LineState
                   ? Theme.of(context).primaryColor
-                  : const Color(0x6680D0D4),
+                  : const Color(0xFFE5F3F5),
             ),
             child: Text(AppLocalizations.of(context)!.graph_1,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: chartState is LineState
                         ? Colors.white
-                        : const Color(0xFF2B3A51))),
+                        : const Color(0xFF93959B))),
           ),
           Spacer(),
           FilledButton(
@@ -216,15 +216,15 @@ class RemoTransmission extends StatelessWidget {
                       BorderRadius.all(Radius.circular(25.adaptedRadius))),
               backgroundColor: chartState is RadarState
                   ? Theme.of(context).primaryColor
-                  : const Color(0x6680D0D4),
+                  : const Color(0xFFE5F3F5),
             ),
             child: Text(AppLocalizations.of(context)!.graph_2,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: chartState is RadarState
                         ? Colors.white
-                        : const Color(0xFF2B3A51))),
+                        : const Color(0xFF93959B))),
           ),
           Spacer()
         ],

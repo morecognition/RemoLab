@@ -104,7 +104,8 @@ class MyApp extends StatelessWidget {
               '/playback_page': (context) => const RemoPlayback(),
               '/imu_debug': (context) => const ImuDebug(),
             },
-            initialRoute: '/pairing',
+            //initialRoute: '/pairing',
+            initialRoute: '/remo_transmission',
           );
         }),
       ),
