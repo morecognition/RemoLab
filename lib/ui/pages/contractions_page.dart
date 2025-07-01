@@ -261,7 +261,7 @@ class ContractionsPage extends StatelessWidget {
       child: CustomPaint(
         painter: RingPainter(
             strokeWidth: 6,
-            color: progressValue > 0.6 ? Color(0xFFFA7572) : Color(0xFF80D0D4)),
+            color: progressValue > 0.7 ? Color(0xFFFA7572) : Color(0xFF80D0D4)),
       ),
     );
   }
@@ -308,18 +308,44 @@ class ContractionsPage extends StatelessWidget {
                           width: 150.adaptedHeight,
                           height: 86.adaptedHeight,
                           "assets/mascotte_rythm.png"),
-                      ClipPath(
-                        clipper: TrapezoidClip(),
-                        child: Container(
-                          color: Color(0xFFBEE2E5),
-                          width: 97.adaptedWidth,
-                          height: 240.adaptedHeight,
+                      Stack(children: [
+                        ClipPath(
+                          clipper: TrapezoidClip(),
+                          child: Stack(children: [
+                            Container(
+                              color: Color(0xFFBEE2E5),
+                              width: 97.adaptedWidth,
+                              height: 240.adaptedHeight,
+                            ),
+                            Positioned(
+                                bottom: 0,
+                                child: Container(
+                                  color: Color(0xFF80D0D4),
+                                  width: 97.adaptedWidth,
+                                  height: 240.adaptedHeight *
+                                      (mvcValue.data ?? 0),
+                                )),
+                          ]),
                         ),
-                      ),
+                        Positioned(
+                            bottom:
+                                240.adaptedHeight * (mvcValue.data ?? 0),
+                            left: 97.adaptedWidth / 2 -
+                                (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
+                                            (mvcValue.data ?? 0)) ??
+                                        0) /
+                                    2,
+                            child: Container(
+                              color: Color(0xFF80D0D4),
+                              width: lerpDouble(45.adaptedWidth,
+                                  110.adaptedWidth, (mvcValue.data ?? 0)),
+                              height: 4.adaptedHeight,
+                            )),
+                      ]),
                       Image.asset(
                           width: 81.adaptedHeight,
                           height: 40.adaptedHeight,
-                          "assets/mascotte_rythm_chill.png")
+                          "assets/mascotte_rythm_chill.png"),
                     ]));
               });
         });
