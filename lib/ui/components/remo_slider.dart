@@ -13,7 +13,7 @@ class RemoSlider extends StatelessWidget {
     var iconWidth = 128.adaptedWidth;
     var iconHeight = 63.adaptedHeight;
 
-    var offset = Offset(0, ((1 - progress) * barHeight / iconHeight));
+    var offset = Offset(0, ((1 - progress) * barHeight / iconHeight) + 0.5);
 
     return Column(
       verticalDirection: VerticalDirection.up,
@@ -27,7 +27,7 @@ class RemoSlider extends StatelessWidget {
                     BorderRadius.all(Radius.circular(4.adaptedRadius)))),
         AnimatedSlide(
             offset: offset,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 100),
             curve: Curves.linear,
             child: _sliderIcon(progress, iconWidth, iconHeight))
       ],
