@@ -130,7 +130,7 @@ class RecordingCircle extends StatelessWidget {
         });
   }
 
-  _buildCircle({required Color color}) {
+  Widget _buildCircle({required Color color}) {
     return Container(
         width: 32.0,
         height: 32.0,
