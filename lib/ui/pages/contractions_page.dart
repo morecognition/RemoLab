@@ -15,6 +15,7 @@ import '../components/ring_widget.dart';
 class ContractionsPage extends StatelessWidget {
   const ContractionsPage({super.key});
 
+  @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Scaffold(
@@ -44,9 +45,8 @@ class ContractionsPage extends StatelessWidget {
           return Column(children: [
             SizedBox(height: 16.adaptedHeight),
             _buildChartButtons(context),
-            SizedBox(height: 46.adaptedHeight),
+            SizedBox(height: 30.adaptedHeight),
             _getCorrectBody(builderContext, remoState),
-            SizedBox(height: 12.adaptedHeight),
           ]);
         }),
       ),
@@ -95,10 +95,10 @@ class ContractionsPage extends StatelessWidget {
         create: (context) => ProportionalControlBloc(),
         child: BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
             builder: (context, state) {
-          context.read<ProportionalControlBloc>().add(StartProportionalControl(
+          /*context.read<ProportionalControlBloc>().add(StartProportionalControl(
               remoState is TransmissionStarted
                   ? remoState.rmsDataStream
-                  : Stream.empty()));
+                  : Stream.empty()));*/
           switch (state) {
             case Inactive _:
               return _buildPreExerciseBody(
@@ -328,14 +328,13 @@ class ContractionsPage extends StatelessWidget {
                                 child: Container(
                                   color: Color(0xFF80D0D4),
                                   width: 97.adaptedWidth,
-                                  height: 240.adaptedHeight *
-                                      (mvcValue.data ?? 0),
+                                  height:
+                                      240.adaptedHeight * (mvcValue.data ?? 0),
                                 )),
                           ]),
                         ),
                         Positioned(
-                            bottom:
-                                240.adaptedHeight * (mvcValue.data ?? 0),
+                            bottom: 240.adaptedHeight * (mvcValue.data ?? 0),
                             left: 97.adaptedWidth / 2 -
                                 (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
                                             (mvcValue.data ?? 0)) ??
@@ -358,52 +357,49 @@ class ContractionsPage extends StatelessWidget {
   }
 
   Widget _buildBiofeedbackBody(BuildContext context, Active state) {
-    return StreamBuilder(
-        stream: state.cyclicFeedbackStream,
-        builder: (context, feedbackValue) {
-          return Transform.translate(
-            offset: Offset(0, -15.adaptedHeight),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Step 3',
-                      style: TextStyle(
-                          fontSize: 26.adaptedFontSize,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2B3A51))),
-                  SizedBox(height: 8.adaptedHeight),
-                  Text(
-                    AppLocalizations.of(context)!.biofeedback_message,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 15.adaptedFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF2B3A51)),
-                  ),
-                  SizedBox(height: 30.adaptedHeight),
-                  Text(
-                    "Repetitions: 10",
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Step 3',
+              style: TextStyle(
+                  fontSize: 26.adaptedFontSize,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2B3A51))),
+          SizedBox(height: 8.adaptedHeight),
+          Text(
+            AppLocalizations.of(context)!.biofeedback_message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 15.adaptedFontSize,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF2B3A51)),
+          ),
+          SizedBox(height: 25.adaptedHeight),
+          StreamBuilder(
+              stream: state.repetitionsStream,
+              builder: (context, repetitions) => Text(
+                    "Repetitions: ${repetitions.data ?? 0}",
                     style: TextStyle(
                         fontSize: 26.adaptedFontSize,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF66A6AA)),
-                  ),
-                  Transform.translate(
-                    offset: Offset(0, -25.adaptedHeight),
-                    child: RemoSlider(0.75)),
-                  SizedBox(height: 15.adaptedHeight),
-                  Text(
-                    "Clicca per fermare l'esercizio",
-                    style: TextStyle(
-                        fontSize: 14.adaptedFontSize,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF4C5460)),
-                  ),
-                  RecordButton(recording: true, onStopPressed: () => {})
-                ]),
-          );
-        });
+                  )),
+          StreamBuilder(
+              stream: state.cyclicFeedbackStream,
+              builder: (context, feedbackValue) =>
+                  RemoSlider(feedbackValue.data ?? 0)),
+          SizedBox(height: 35.adaptedHeight),
+          Text(
+            "Clicca per fermare l'esercizio",
+            style: TextStyle(
+                fontSize: 14.adaptedFontSize,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF4C5460)),
+          ),
+          RecordButton(
+              key: Key("test"), recording: true, onStopPressed: () => {})
+        ]);
   }
 
   Widget _buildPreExerciseBody(BuildContext context, RemoState remoState,
