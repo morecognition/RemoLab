@@ -330,7 +330,6 @@ class _DataChartState extends State<DataChart> {
     );
 
     // Listening to Remo.
-
     rmsStreamSubscription = widget.rmsDataStream.listen(
       (rmsData) {
         setState(

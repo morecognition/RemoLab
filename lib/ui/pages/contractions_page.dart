@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/trapezoid_clip.dart';
+import 'package:remorder/ui/components/recording_button.dart';
+import 'package:remorder/ui/components/remo_slider.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../components/ring_widget.dart';
@@ -93,6 +95,10 @@ class ContractionsPage extends StatelessWidget {
         create: (context) => ProportionalControlBloc(),
         child: BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
             builder: (context, state) {
+          context.read<ProportionalControlBloc>().add(StartProportionalControl(
+              remoState is TransmissionStarted
+                  ? remoState.rmsDataStream
+                  : Stream.empty()));
           switch (state) {
             case Inactive _:
               return _buildPreExerciseBody(
@@ -355,38 +361,48 @@ class ContractionsPage extends StatelessWidget {
     return StreamBuilder(
         stream: state.cyclicFeedbackStream,
         builder: (context, feedbackValue) {
-          return Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 20,
-                  children: [
-                SizedBox(height: 10.adaptedHeight),
-                Text(
-                  AppLocalizations.of(context)!.step_3,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 26.adaptedFontSize,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                Text(
-                  AppLocalizations.of(context)!.biofeedback_message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 15.adaptedFontSize,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black),
-                ),
-                SizedBox(height: 30.adaptedHeight),
-                SizedBox(
-                    width: 200.adaptedWidth,
-                    child: LinearProgressIndicator(
-                        value: feedbackValue.data,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                        minHeight: 40.adaptedHeight)),
-                SizedBox(height: 70.adaptedHeight),
-              ]));
+          return Transform.translate(
+            offset: Offset(0, -15.adaptedHeight),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Step 3',
+                      style: TextStyle(
+                          fontSize: 26.adaptedFontSize,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2B3A51))),
+                  SizedBox(height: 8.adaptedHeight),
+                  Text(
+                    AppLocalizations.of(context)!.biofeedback_message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 15.adaptedFontSize,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF2B3A51)),
+                  ),
+                  SizedBox(height: 30.adaptedHeight),
+                  Text(
+                    "Repetitions: 10",
+                    style: TextStyle(
+                        fontSize: 26.adaptedFontSize,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF66A6AA)),
+                  ),
+                  Transform.translate(
+                    offset: Offset(0, -25.adaptedHeight),
+                    child: RemoSlider(0.75)),
+                  SizedBox(height: 15.adaptedHeight),
+                  Text(
+                    "Clicca per fermare l'esercizio",
+                    style: TextStyle(
+                        fontSize: 14.adaptedFontSize,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF4C5460)),
+                  ),
+                  RecordButton(recording: true, onStopPressed: () => {})
+                ]),
+          );
         });
   }
 
