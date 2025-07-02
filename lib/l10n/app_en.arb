@@ -33,9 +33,17 @@
   "want_delete": "Want to delete?",
   "delete_confirm_text": "Are you sure want to delete the file?\nYou will not be able to recover it.",
   "feed_back": "Feed back",
-  "start_calibrating": "Start calibrating",
-  "pre_calibration_message": "Relax the muscle and\nstart calibrating",
-  "rest_calibration_message": "Relax the muscle,\nwe are recording the resting activity\nfor 5 seconds...",
-  "max_calibration_message": "Do the exercise at max of\nyour strength for 3 seconds...",
-  "biofeedback_message": "Activate the muscle as\nthe therapist told you,\nthe movement on the screen\ndisplays the muscular activation"
+  "start_calibrating": "Start",
+  "pre_calibration_message": "Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.",
+  "rest_calibration_message": "Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.",
+  "pre_max_calibration_message": "Do the exercise at max of\nyour strength for 3 seconds.",
+  "max_calibration_message": "Do the exercise at max of\nyour strength for 3 seconds.",
+  "pre_biofeedback_message": "Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation",
+  "biofeedback_message": "Activate the muscle as the therapist told you.\nThe movement on the screen displays the muscular activation",
+  "step_1": "Step 1",
+  "step_2": "Step 2",
+  "step_3": "Step 3",
+  "next_exercise": "Next exercise",
+  "repeat": "Repeat",
+  "exercise_completed": "Completed!"
 }

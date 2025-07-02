@@ -113,21 +113,19 @@ class RemoPlayback extends StatelessWidget {
                       BorderRadius.all(Radius.circular(25.adaptedRadius))),
               backgroundColor: chartState is LineState
                   ? Theme.of(context).primaryColor
-                  : const Color(0x6680D0D4),
+                  : const Color(0xFFE5F3F5),
             ),
             child: Text(AppLocalizations.of(context)!.graph_1,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: chartState is LineState
                         ? Colors.white
-                        : const Color(0xFF2B3A51))),
+                        : const Color(0xFF93959B))),
           ),
           Spacer(),
           FilledButton(
-            onPressed: () => chartState is RadarState
-                ? null
-                : context.read<ChartBloc>().add(SwitchChart()),
+            onPressed: () {},
             style: FilledButton.styleFrom(
               fixedSize: Size(
                 164.adaptedWidth,
@@ -136,17 +134,13 @@ class RemoPlayback extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius:
                       BorderRadius.all(Radius.circular(25.adaptedRadius))),
-              backgroundColor: chartState is RadarState
-                  ? Theme.of(context).primaryColor
-                  : const Color(0x6680D0D4),
+              backgroundColor: const Color(0xFFE5F3F5),
             ),
             child: Text(AppLocalizations.of(context)!.graph_2,
                 style: TextStyle(
                     fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700,
-                    color: chartState is RadarState
-                        ? Colors.white
-                        : const Color(0xFF2B3A51))),
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF93959B))),
           ),
           Spacer()
         ],
