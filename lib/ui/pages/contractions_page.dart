@@ -376,7 +376,7 @@ class ContractionsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Step 3',
+            Text(AppLocalizations.of(context)!.step_3,
                 style: TextStyle(
                     fontSize: 26.adaptedFontSize,
                     fontWeight: FontWeight.w600,
@@ -394,7 +394,7 @@ class ContractionsPage extends StatelessWidget {
             StreamBuilder(
                 stream: state.repetitionsStream,
                 builder: (context, repetitions) => Text(
-                      "Repetitions: ${repetitions.data ?? 0}",
+                      AppLocalizations.of(context)!.repetitions(repetitions.data ?? 0),
                       style: TextStyle(
                           fontSize: 26.adaptedFontSize,
                           fontWeight: FontWeight.w500,
@@ -406,7 +406,7 @@ class ContractionsPage extends StatelessWidget {
                     RemoSlider(feedbackValue.data ?? 0)),
             SizedBox(height: 35.adaptedHeight),
             Text(
-              "Clicca per fermare l'esercizio",
+              AppLocalizations.of(context)!.stop_exercise,
               style: TextStyle(
                   fontSize: 14.adaptedFontSize,
                   fontWeight: FontWeight.w400,
