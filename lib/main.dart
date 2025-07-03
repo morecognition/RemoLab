@@ -37,7 +37,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<BluetoothBloc>(create: (context) => BluetoothBloc()),
           BlocProvider<RemoBloc>(create: (context) => RemoBloc()),
-          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc())
+          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc()),
+          BlocProvider<ProportionalControlBloc>(create: (context) => ProportionalControlBloc()),
+          BlocProvider<ProportionalControlFileBloc>(create: (context) => ProportionalControlFileBloc())
         ],
         child: Builder(builder: (context) {
           return MaterialApp(
@@ -105,7 +107,7 @@ class MyApp extends StatelessWidget {
               '/imu_debug': (context) => const ImuDebug(),
             },
             initialRoute: '/pairing',
-            //initialRoute: '/remo_transmission',
+            //initialRoute: '/remo_transmission/contractions',
           );
         }),
       ),

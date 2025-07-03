@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
 import 'package:remorder/ui/components/recording_button.dart';
+import 'package:remorder/ui/pages/save_page.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -112,7 +113,7 @@ class RemoTransmission extends StatelessWidget {
             return BlocListener<RemoFileBloc, RemoFileState>(
               listener: (context, state) async {
                 if (state is RecordingComplete) {
-                  Navigator.pushNamed(context, "/save_page");
+                  Navigator.pushNamed(context, "/save_page", arguments: SavePageMode.rms);
                 }
               },
               child: Center(

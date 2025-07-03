@@ -8,12 +8,16 @@ import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/trapezoid_clip.dart';
 import 'package:remorder/ui/components/recording_button.dart';
 import 'package:remorder/ui/components/remo_slider.dart';
+import 'package:remorder/ui/pages/save_page.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../components/ring_widget.dart';
 
 class ContractionsPage extends StatelessWidget {
   const ContractionsPage({super.key});
+
+  final maxStrenghtValue = 350;
+  final maxBaseValue = 140;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +32,7 @@ class ContractionsPage extends StatelessWidget {
               child: Row(children: [
                 SizedBox(height: 36.adaptedHeight),
                 Expanded(
-                    child: Text(
-                  textAlign: TextAlign.center,
-                  AppLocalizations.of(context)!.feed_back,
-                  style: TextStyle(
-                      color: Color(0xFF2B3A51),
-                      fontSize: 20.adaptedFontSize,
-                      fontWeight: FontWeight.w700),
-                ))
+                    child: _getTitle(context))
               ])),
           centerTitle: true,
         ),
@@ -90,88 +87,109 @@ class ContractionsPage extends StatelessWidget {
         }));
   }
 
+  Widget _getTitle(BuildContext context) {
+    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+        builder: (context, state) {
+      if (state is ReadyToStart || state is Active) {
+        return _buildTitleWidget(AppLocalizations.of(context)!.recording);
+      }
+
+      return _buildTitleWidget(AppLocalizations.of(context)!.calibration);
+    });
+  }
+
+  Widget _buildTitleWidget(String text) {
+    return Text(
+      textAlign: TextAlign.center,
+      text,
+      style: TextStyle(
+          color: Color(0xFF2B3A51),
+          fontSize: 20.adaptedFontSize,
+          fontWeight: FontWeight.w700),
+    );
+  }
+
   Widget _getCorrectBody(BuildContext context, RemoState remoState) {
-    return BlocProvider(
-        create: (context) => ProportionalControlBloc(),
-        child: BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
-            builder: (context, state) {
-          /*context.read<ProportionalControlBloc>().add(StartProportionalControl(
-              remoState is TransmissionStarted
-                  ? remoState.rmsDataStream
-                  : Stream.empty()));*/
-          switch (state) {
-            case Inactive _:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_1,
-                AppLocalizations.of(context)!.pre_calibration_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartRecordingBaseValue(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+        builder: (context, state) {
+      /*context.read<ProportionalControlBloc>().add(StartRecordingBaseValue(
+          remoState is TransmissionStarted
+              ? remoState.rmsDataStream
+              : Stream.empty()));*/
 
-            case RecordingBaseValue recordingBaseState:
-              return _buildRestCalibrationBody(context, recordingBaseState);
+      switch (state) {
+        case Inactive _:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_1,
+            AppLocalizations.of(context)!.pre_calibration_message,
+            () => context.read<ProportionalControlBloc>().add(
+                StartRecordingBaseValue(remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-            case PostBaseValue prepareRecordingMvc:
-              return _buildNextExerciseBody(
-                  context,
-                  remoState,
-                  () => context
-                      .read<ProportionalControlBloc>()
-                      .add(PrepareRecordingMvc()),
-                  () => context.read<ProportionalControlBloc>().add(
-                      StartRecordingBaseValue(remoState is TransmissionStarted
-                          ? remoState.rmsDataStream
-                          : Stream.empty())));
+        case RecordingBaseValue recordingBaseState:
+          return _buildRestCalibrationBody(context, recordingBaseState);
 
-            case ReadyToRecordMvc readyRecordingBaseState:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_2,
-                AppLocalizations.of(context)!.pre_max_calibration_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartRecordingMvc(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+        case PostBaseValue prepareRecordingMvc:
+          return _buildNextExerciseBody(
+              context,
+              remoState,
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareRecordingMvc()),
+              () => context.read<ProportionalControlBloc>().add(
+                  StartRecordingBaseValue(remoState is TransmissionStarted
+                      ? remoState.rmsDataStream
+                      : Stream.empty())));
 
-            case RecordingMvc recordingMvcState:
-              return _buildMaxCalibrationBody(context, recordingMvcState);
+        case ReadyToRecordMvc readyRecordingBaseState:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_2,
+            AppLocalizations.of(context)!.pre_max_calibration_message,
+            () => context.read<ProportionalControlBloc>().add(StartRecordingMvc(
+                remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-            case PostMvcValue prepareActive:
-              return _buildNextExerciseBody(
-                  context,
-                  remoState,
-                  () => context
-                      .read<ProportionalControlBloc>()
-                      .add(PrepareProportionalControl()),
-                  () => context.read<ProportionalControlBloc>().add(
-                      StartRecordingMvc(remoState is TransmissionStarted
-                          ? remoState.rmsDataStream
-                          : Stream.empty())));
+        case RecordingMvc recordingMvcState:
+          return _buildMaxCalibrationBody(context, recordingMvcState);
 
-            case ReadyToStart readyActive:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_3,
-                AppLocalizations.of(context)!.pre_biofeedback_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartProportionalControl(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+        case PostMvcValue prepareActive:
+          return _buildNextExerciseBody(
+              context,
+              remoState,
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareProportionalControl()),
+              () => context.read<ProportionalControlBloc>().add(
+                  StartRecordingMvc(remoState is TransmissionStarted
+                      ? remoState.rmsDataStream
+                      : Stream.empty())));
 
-            case Active active:
-              return _buildBiofeedbackBody(context, active);
-          }
+        case ReadyToStart readyActive:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_3,
+            AppLocalizations.of(context)!.pre_biofeedback_message,
+            () => context.read<ProportionalControlBloc>().add(
+                StartProportionalControl(remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-          return Container();
-        }));
+        case Active active:
+          return _buildBiofeedbackBody(context, active);
+      }
+
+      return Container();
+    });
   }
 
   Widget _buildRestCalibrationBody(
@@ -251,8 +269,11 @@ class ContractionsPage extends StatelessWidget {
                         //Blue Gradient
                         Image.asset("assets/mascotte_emoji.png"),
                         //Remo Icon
-                        _drawBaseValueRing(30.adaptedHeight, 246.adaptedHeight,
-                            baseValue.data ?? 0)
+                        _drawBaseValueRing(
+                            30.adaptedHeight,
+                            246.adaptedHeight,
+                            clampDouble(
+                                (baseValue.data ?? 0) / maxBaseValue, 0, 1))
                       ])
                     ]));
               });
@@ -279,6 +300,8 @@ class ContractionsPage extends StatelessWidget {
           return StreamBuilder(
               stream: state.mvcStream,
               builder: (context, mvcValue) {
+                var normalizedValue =
+                    clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
                 return Center(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -313,7 +336,7 @@ class ContractionsPage extends StatelessWidget {
                       Image.asset(
                           width: 150.adaptedHeight,
                           height: 86.adaptedHeight,
-                          "assets/mascotte_rythm.png"),
+                          "assets/mascotte_rythm_full.png"),
                       Stack(children: [
                         ClipPath(
                           clipper: TrapezoidClip(),
@@ -326,24 +349,23 @@ class ContractionsPage extends StatelessWidget {
                             Positioned(
                                 bottom: 0,
                                 child: Container(
-                                  color: Color(0xFF80D0D4),
-                                  width: 97.adaptedWidth,
-                                  height:
-                                      240.adaptedHeight * (mvcValue.data ?? 0),
-                                )),
+                                    color: Color(0xFF80D0D4),
+                                    width: 97.adaptedWidth,
+                                    height:
+                                        240.adaptedHeight * normalizedValue)),
                           ]),
                         ),
                         Positioned(
-                            bottom: 240.adaptedHeight * (mvcValue.data ?? 0),
+                            bottom: 240.adaptedHeight * normalizedValue,
                             left: 97.adaptedWidth / 2 -
                                 (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
-                                            (mvcValue.data ?? 0)) ??
+                                            normalizedValue) ??
                                         0) /
                                     2,
                             child: Container(
                               color: Color(0xFF80D0D4),
                               width: lerpDouble(45.adaptedWidth,
-                                  110.adaptedWidth, (mvcValue.data ?? 0)),
+                                  110.adaptedWidth, normalizedValue),
                               height: 4.adaptedHeight,
                             )),
                       ]),
@@ -357,49 +379,74 @@ class ContractionsPage extends StatelessWidget {
   }
 
   Widget _buildBiofeedbackBody(BuildContext context, Active state) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Step 3',
+    if (context.read<ProportionalControlFileBloc>().state is! Recording) {
+      context.read<ProportionalControlFileBloc>().add(StartRecordingBiofeedback(
+          state.cyclicFeedbackStream,
+          state.repetitionsStream,
+          state.baseValue,
+          state.mvc));
+    }
+
+    return BlocListener<ProportionalControlFileBloc, RemoFileState>(
+      listener: (context, state) async {
+        if (state is RecordingComplete) {
+          Navigator.pushNamed(context, "/save_page",
+              arguments: SavePageMode.biofeedback);
+        }
+      },
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(AppLocalizations.of(context)!.step_3,
+                style: TextStyle(
+                    fontSize: 26.adaptedFontSize,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2B3A51))),
+            SizedBox(height: 8.adaptedHeight),
+            Text(
+              AppLocalizations.of(context)!.biofeedback_message,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 26.adaptedFontSize,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2B3A51))),
-          SizedBox(height: 8.adaptedHeight),
-          Text(
-            AppLocalizations.of(context)!.biofeedback_message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 15.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2B3A51)),
-          ),
-          SizedBox(height: 25.adaptedHeight),
-          StreamBuilder(
-              stream: state.repetitionsStream,
-              builder: (context, repetitions) => Text(
-                    "Repetitions: ${repetitions.data ?? 0}",
-                    style: TextStyle(
-                        fontSize: 26.adaptedFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF66A6AA)),
-                  )),
-          StreamBuilder(
-              stream: state.cyclicFeedbackStream,
-              builder: (context, feedbackValue) =>
-                  RemoSlider(feedbackValue.data ?? 0)),
-          SizedBox(height: 35.adaptedHeight),
-          Text(
-            "Clicca per fermare l'esercizio",
-            style: TextStyle(
-                fontSize: 14.adaptedFontSize,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF4C5460)),
-          ),
-          RecordButton(
-              key: Key("test"), recording: true, onStopPressed: () => {})
-        ]);
+                  fontSize: 15.adaptedFontSize,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF2B3A51)),
+            ),
+            SizedBox(height: 25.adaptedHeight),
+            StreamBuilder(
+                stream: state.repetitionsStream,
+                builder: (context, repetitions) => Text(
+                      AppLocalizations.of(context)!
+                          .repetitions(repetitions.data ?? 0),
+                      style: TextStyle(
+                          fontSize: 26.adaptedFontSize,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF66A6AA)),
+                    )),
+            StreamBuilder(
+                stream: state.cyclicFeedbackStream,
+                builder: (context, feedbackValue) =>
+                    RemoSlider(feedbackValue.data ?? 0)),
+            SizedBox(height: 35.adaptedHeight),
+            Text(
+              AppLocalizations.of(context)!.stop_exercise,
+              style: TextStyle(
+                  fontSize: 14.adaptedFontSize,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF4C5460)),
+            ),
+            RecordButton(
+                key: Key("test"),
+                recording: true,
+                onStopPressed: () {
+                  context.read<ProportionalControlBloc>().add(StopOperations());
+
+                  context
+                      .read<ProportionalControlFileBloc>()
+                      .add(StopRecording());
+                })
+          ]),
+    );
   }
 
   Widget _buildPreExerciseBody(BuildContext context, RemoState remoState,

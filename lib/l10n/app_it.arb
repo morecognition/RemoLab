@@ -20,6 +20,8 @@
   "data_visualization": "Visualizazione dati",
   "graph_1": "Grafico",
   "graph_2": "Feedback",
+  "calibration": "Calibrazione",
+  "recording": "Registrazione",
   "want_save": "Vuoi salvare la registrazione?",
   "save": "Salva",
   "saving": "Salvando...",
@@ -32,7 +34,7 @@
   "you_need_to_name": "Dai un nome al file",
   "want_delete": "Vuoi eliminarlo?",
   "delete_confirm_text": "Sicuro di voler eliminare il file?\nNon potrai recuperarlo.",
-  "feed_back": "Feed back",
+  "feed_back": "Feedback",
   "start_calibrating": "Inizia",
   "pre_calibration_message": "Rilassa il muscolo.\nStiamo registrando l'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.",
   "rest_calibration_message": "Rilassa il muscolo.\nStiamo registrando l'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.",
@@ -45,5 +47,15 @@
   "step_3": "Step 3",
   "next_exercise": "Prossimo esercizio",
   "repeat": "Ripeti",
-  "exercise_completed": "Completato!"
+  "exercise_completed": "Completato!",
+  "stop_exercise": "Clicca per fermare l'esercizio",
+  "repetitions": "Ripetizioni: {repetition_count}",
+  "@repetitions": {
+    "placeholders": {
+      "repetition_count": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  }
 }

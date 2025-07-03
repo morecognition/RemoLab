@@ -73,6 +73,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get graph_2 => 'Feedback';
 
   @override
+  String get calibration => 'Calibrazione';
+
+  @override
+  String get recording => 'Registrazione';
+
+  @override
   String get want_save => 'Vuoi salvare la registrazione?';
 
   @override
@@ -111,7 +117,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Sicuro di voler eliminare il file?\nNon potrai recuperarlo.';
 
   @override
-  String get feed_back => 'Feed back';
+  String get feed_back => 'Feedback';
 
   @override
   String get start_calibrating => 'Inizia';
@@ -157,4 +163,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get exercise_completed => 'Completato!';
+
+  @override
+  String get stop_exercise => 'Clicca per fermare l\'esercizio';
+
+  @override
+  String repetitions(int repetition_count) {
+    return 'Ripetizioni: $repetition_count';
+  }
 }
