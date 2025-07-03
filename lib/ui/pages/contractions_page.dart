@@ -16,6 +16,8 @@ import '../components/ring_widget.dart';
 class ContractionsPage extends StatelessWidget {
   const ContractionsPage({super.key});
 
+  final maxStrenghtValue = 350;
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -96,10 +98,6 @@ class ContractionsPage extends StatelessWidget {
         create: (context) => ProportionalControlBloc(),
         child: BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
             builder: (context, state) {
-          /*context.read<ProportionalControlBloc>().add(StartProportionalControl(
-              remoState is TransmissionStarted
-                  ? remoState.rmsDataStream
-                  : Stream.empty()));*/
           switch (state) {
             case Inactive _:
               return _buildPreExerciseBody(
@@ -280,6 +278,7 @@ class ContractionsPage extends StatelessWidget {
           return StreamBuilder(
               stream: state.mvcStream,
               builder: (context, mvcValue) {
+                var normalizedValue = clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
                 return Center(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -314,7 +313,7 @@ class ContractionsPage extends StatelessWidget {
                       Image.asset(
                           width: 150.adaptedHeight,
                           height: 86.adaptedHeight,
-                          "assets/mascotte_rythm.png"),
+                          "assets/mascotte_rythm_full.png"),
                       Stack(children: [
                         ClipPath(
                           clipper: TrapezoidClip(),
@@ -330,21 +329,21 @@ class ContractionsPage extends StatelessWidget {
                                   color: Color(0xFF80D0D4),
                                   width: 97.adaptedWidth,
                                   height:
-                                      240.adaptedHeight * (mvcValue.data ?? 0),
+                                      240.adaptedHeight * normalizedValue
                                 )),
                           ]),
                         ),
                         Positioned(
-                            bottom: 240.adaptedHeight * (mvcValue.data ?? 0),
+                            bottom: 240.adaptedHeight * normalizedValue,
                             left: 97.adaptedWidth / 2 -
                                 (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
-                                            (mvcValue.data ?? 0)) ??
+                                            normalizedValue) ??
                                         0) /
                                     2,
                             child: Container(
                               color: Color(0xFF80D0D4),
                               width: lerpDouble(45.adaptedWidth,
-                                  110.adaptedWidth, (mvcValue.data ?? 0)),
+                                  110.adaptedWidth, normalizedValue),
                               height: 4.adaptedHeight,
                             )),
                       ]),
