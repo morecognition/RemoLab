@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:design_sync/design_sync.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,9 +31,8 @@ class PairingPage extends StatelessWidget {
                 fontWeight: FontWeight.w600),
             toolbarHeight: 65.adaptedHeight,
             title: Center(
-                child: Expanded(
-                    child: Text(AppLocalizations.of(context)!.welcome,
-                        textAlign: TextAlign.center))),
+                child: Text(AppLocalizations.of(context)!.welcome,
+                    textAlign: TextAlign.center)),
           ),
           backgroundColor: Colors.transparent,
           body: Center(
@@ -114,8 +112,7 @@ class PairingPage extends StatelessWidget {
                         },
                   icon: Image.asset("assets/add_file_icon.png",
                       width: 36.adaptedWidth,
-                      height: 36.adaptedHeight,
-                      color: remoFileState is Recording ? Colors.grey : null));
+                      height: 36.adaptedHeight));
             }))
       ],
     );

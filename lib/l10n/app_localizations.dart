@@ -224,6 +224,18 @@ abstract class AppLocalizations {
   /// **'Feedback'**
   String get graph_2;
 
+  /// No description provided for @calibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibration'**
+  String get calibration;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording'**
+  String get recording;
+
   /// No description provided for @want_save.
   ///
   /// In en, this message translates to:
