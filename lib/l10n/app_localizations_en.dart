@@ -73,6 +73,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get graph_2 => 'Feedback';
 
   @override
+  String get calibration => 'Calibration';
+
+  @override
+  String get recording => 'Recording';
+
+  @override
   String get want_save => 'Want to save the record?';
 
   @override

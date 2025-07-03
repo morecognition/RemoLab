@@ -17,6 +17,7 @@ class ContractionsPage extends StatelessWidget {
   const ContractionsPage({super.key});
 
   final maxStrenghtValue = 350;
+  final maxBaseValue = 140;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +32,7 @@ class ContractionsPage extends StatelessWidget {
               child: Row(children: [
                 SizedBox(height: 36.adaptedHeight),
                 Expanded(
-                    child: Text(
-                  textAlign: TextAlign.center,
-                  AppLocalizations.of(context)!.feed_back,
-                  style: TextStyle(
-                      color: Color(0xFF2B3A51),
-                      fontSize: 20.adaptedFontSize,
-                      fontWeight: FontWeight.w700),
-                ))
+                    child: _getTitle(context))
               ])),
           centerTitle: true,
         ),
@@ -93,84 +87,109 @@ class ContractionsPage extends StatelessWidget {
         }));
   }
 
+  Widget _getTitle(BuildContext context) {
+    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+        builder: (context, state) {
+      if (state is ReadyToStart || state is Active) {
+        return _buildTitleWidget(AppLocalizations.of(context)!.recording);
+      }
+
+      return _buildTitleWidget(AppLocalizations.of(context)!.calibration);
+    });
+  }
+
+  Widget _buildTitleWidget(String text) {
+    return Text(
+      textAlign: TextAlign.center,
+      text,
+      style: TextStyle(
+          color: Color(0xFF2B3A51),
+          fontSize: 20.adaptedFontSize,
+          fontWeight: FontWeight.w700),
+    );
+  }
+
   Widget _getCorrectBody(BuildContext context, RemoState remoState) {
-    return BlocProvider(
-        create: (context) => ProportionalControlBloc(),
-        child: BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
-            builder: (context, state) {
-          switch (state) {
-            case Inactive _:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_1,
-                AppLocalizations.of(context)!.pre_calibration_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartRecordingBaseValue(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+        builder: (context, state) {
+      /*context.read<ProportionalControlBloc>().add(StartRecordingBaseValue(
+          remoState is TransmissionStarted
+              ? remoState.rmsDataStream
+              : Stream.empty()));*/
 
-            case RecordingBaseValue recordingBaseState:
-              return _buildRestCalibrationBody(context, recordingBaseState);
+      switch (state) {
+        case Inactive _:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_1,
+            AppLocalizations.of(context)!.pre_calibration_message,
+            () => context.read<ProportionalControlBloc>().add(
+                StartRecordingBaseValue(remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-            case PostBaseValue prepareRecordingMvc:
-              return _buildNextExerciseBody(
-                  context,
-                  remoState,
-                  () => context
-                      .read<ProportionalControlBloc>()
-                      .add(PrepareRecordingMvc()),
-                  () => context.read<ProportionalControlBloc>().add(
-                      StartRecordingBaseValue(remoState is TransmissionStarted
-                          ? remoState.rmsDataStream
-                          : Stream.empty())));
+        case RecordingBaseValue recordingBaseState:
+          return _buildRestCalibrationBody(context, recordingBaseState);
 
-            case ReadyToRecordMvc readyRecordingBaseState:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_2,
-                AppLocalizations.of(context)!.pre_max_calibration_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartRecordingMvc(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+        case PostBaseValue prepareRecordingMvc:
+          return _buildNextExerciseBody(
+              context,
+              remoState,
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareRecordingMvc()),
+              () => context.read<ProportionalControlBloc>().add(
+                  StartRecordingBaseValue(remoState is TransmissionStarted
+                      ? remoState.rmsDataStream
+                      : Stream.empty())));
 
-            case RecordingMvc recordingMvcState:
-              return _buildMaxCalibrationBody(context, recordingMvcState);
+        case ReadyToRecordMvc readyRecordingBaseState:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_2,
+            AppLocalizations.of(context)!.pre_max_calibration_message,
+            () => context.read<ProportionalControlBloc>().add(StartRecordingMvc(
+                remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-            case PostMvcValue prepareActive:
-              return _buildNextExerciseBody(
-                  context,
-                  remoState,
-                  () => context
-                      .read<ProportionalControlBloc>()
-                      .add(PrepareProportionalControl()),
-                  () => context.read<ProportionalControlBloc>().add(
-                      StartRecordingMvc(remoState is TransmissionStarted
-                          ? remoState.rmsDataStream
-                          : Stream.empty())));
+        case RecordingMvc recordingMvcState:
+          return _buildMaxCalibrationBody(context, recordingMvcState);
 
-            case ReadyToStart readyActive:
-              return _buildPreExerciseBody(
-                context,
-                remoState,
-                AppLocalizations.of(context)!.step_3,
-                AppLocalizations.of(context)!.pre_biofeedback_message,
-                () => context.read<ProportionalControlBloc>().add(
-                    StartProportionalControl(remoState is TransmissionStarted
-                        ? remoState.rmsDataStream
-                        : Stream.empty())),
-              );
+        case PostMvcValue prepareActive:
+          return _buildNextExerciseBody(
+              context,
+              remoState,
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareProportionalControl()),
+              () => context.read<ProportionalControlBloc>().add(
+                  StartRecordingMvc(remoState is TransmissionStarted
+                      ? remoState.rmsDataStream
+                      : Stream.empty())));
 
-            case Active active:
-              return _buildBiofeedbackBody(context, active);
-          }
+        case ReadyToStart readyActive:
+          return _buildPreExerciseBody(
+            context,
+            remoState,
+            AppLocalizations.of(context)!.step_3,
+            AppLocalizations.of(context)!.pre_biofeedback_message,
+            () => context.read<ProportionalControlBloc>().add(
+                StartProportionalControl(remoState is TransmissionStarted
+                    ? remoState.rmsDataStream
+                    : Stream.empty())),
+          );
 
-          return Container();
-        }));
+        case Active active:
+          return _buildBiofeedbackBody(context, active);
+      }
+
+      return Container();
+    });
   }
 
   Widget _buildRestCalibrationBody(
@@ -250,8 +269,11 @@ class ContractionsPage extends StatelessWidget {
                         //Blue Gradient
                         Image.asset("assets/mascotte_emoji.png"),
                         //Remo Icon
-                        _drawBaseValueRing(30.adaptedHeight, 246.adaptedHeight,
-                            baseValue.data ?? 0)
+                        _drawBaseValueRing(
+                            30.adaptedHeight,
+                            246.adaptedHeight,
+                            clampDouble(
+                                (baseValue.data ?? 0) / maxBaseValue, 0, 1))
                       ])
                     ]));
               });
@@ -278,7 +300,8 @@ class ContractionsPage extends StatelessWidget {
           return StreamBuilder(
               stream: state.mvcStream,
               builder: (context, mvcValue) {
-                var normalizedValue = clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
+                var normalizedValue =
+                    clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
                 return Center(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -326,11 +349,10 @@ class ContractionsPage extends StatelessWidget {
                             Positioned(
                                 bottom: 0,
                                 child: Container(
-                                  color: Color(0xFF80D0D4),
-                                  width: 97.adaptedWidth,
-                                  height:
-                                      240.adaptedHeight * normalizedValue
-                                )),
+                                    color: Color(0xFF80D0D4),
+                                    width: 97.adaptedWidth,
+                                    height:
+                                        240.adaptedHeight * normalizedValue)),
                           ]),
                         ),
                         Positioned(

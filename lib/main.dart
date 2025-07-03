@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
               '/imu_debug': (context) => const ImuDebug(),
             },
             initialRoute: '/pairing',
-            //initialRoute: '/remo_transmission',
+            //initialRoute: '/remo_transmission/contractions',
           );
         }),
       ),

@@ -20,6 +20,8 @@
   "data_visualization": "Data visualization",
   "graph_1": "Graph",
   "graph_2": "Feedback",
+  "calibration": "Calibration",
+  "recording": "Recording",
   "want_save": "Want to save the record?",
   "save": "Save",
   "saving": "Saving...",
