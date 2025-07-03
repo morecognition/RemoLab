@@ -20,9 +20,12 @@ class _SaveState extends State<SavePage> {
 
   String selectedFileName = "";
   final _formKey = GlobalKey<FormState>();
+  late SavePageMode _mode;
 
   @override
   Widget build(BuildContext context) {
+    _mode = ModalRoute.of(context)!.settings.arguments as SavePageMode;
+
     return PopScope(
       canPop: false,
       child: Stack(
@@ -49,8 +52,8 @@ class _SaveState extends State<SavePage> {
                     left: 16.adaptedWidth,
                     top: 80.adaptedHeight,
                     bottom: 30.adaptedHeight),
-                child: Center(child: BlocBuilder<RemoFileBloc, RemoFileState>(
-                    builder: (context, remoFileState) {
+                child: Center(
+                    child: _getBuilder(_mode, (context, remoFileState) {
                   if (remoFileState is SavingRecord) {
                     return LoadingLoop();
                   }
@@ -76,6 +79,30 @@ class _SaveState extends State<SavePage> {
     );
   }
 
+  Widget _getBuilder(
+      SavePageMode mode, Widget Function(BuildContext, RemoFileState) builder) {
+    switch (mode) {
+      case SavePageMode.rms:
+        return BlocBuilder<RemoFileBloc, RemoFileState>(builder: builder);
+
+      case SavePageMode.biofeedback:
+        return BlocBuilder<ProportionalControlFileBloc, RemoFileState>(
+            builder: builder);
+    }
+  }
+
+  void _sendEvent(SavePageMode mode, RemoFileEvent event) {
+    switch (mode) {
+      case SavePageMode.rms:
+        context.read<RemoFileBloc>().add(event);
+        break;
+
+      case SavePageMode.biofeedback:
+        context.read<ProportionalControlFileBloc>().add(event);
+        break;
+    }
+  }
+
   Widget _buildSaveScreen() {
     return Column(
       children: [
@@ -86,9 +113,7 @@ class _SaveState extends State<SavePage> {
         _buildForm(),
         Spacer(),
         FilledButton(
-          onPressed: () {
-            context.read<RemoFileBloc>().add(SaveRecord(selectedFileName));
-          },
+          onPressed: () => _sendEvent(_mode, SaveRecord(selectedFileName)),
           style: FilledButton.styleFrom(
             fixedSize: Size(
               343.adaptedWidth,
@@ -179,7 +204,7 @@ class _SaveState extends State<SavePage> {
               SizedBox(height: 34.adaptedHeight),
               FilledButton(
                 onPressed: () {
-                  context.read<RemoFileBloc>().add(DiscardRecord());
+                  _sendEvent(_mode, DiscardRecord());
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },
@@ -215,8 +240,7 @@ class _SaveState extends State<SavePage> {
   }
 
   Widget _getAppTitle() {
-    return BlocBuilder<RemoFileBloc, RemoFileState>(
-        builder: (context, remoFileState) {
+    return _getBuilder(_mode, (context, remoFileState) {
       if (remoFileState is RecordSaved || remoFileState is RemoFileReady) {
         return Text(AppLocalizations.of(context)!.saved);
       }
@@ -229,3 +253,5 @@ class _SaveState extends State<SavePage> {
     });
   }
 }
+
+enum SavePageMode { rms, biofeedback }

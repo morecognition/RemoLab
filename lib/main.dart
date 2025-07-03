@@ -37,7 +37,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<BluetoothBloc>(create: (context) => BluetoothBloc()),
           BlocProvider<RemoBloc>(create: (context) => RemoBloc()),
-          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc())
+          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc()),
+          BlocProvider<ProportionalControlBloc>(create: (context) => ProportionalControlBloc()),
+          BlocProvider<ProportionalControlFileBloc>(create: (context) => ProportionalControlFileBloc())
         ],
         child: Builder(builder: (context) {
           return MaterialApp(
