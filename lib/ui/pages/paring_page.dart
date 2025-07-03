@@ -31,9 +31,8 @@ class PairingPage extends StatelessWidget {
                 fontWeight: FontWeight.w600),
             toolbarHeight: 65.adaptedHeight,
             title: Center(
-                child: Expanded(
-                    child: Text(AppLocalizations.of(context)!.welcome,
-                        textAlign: TextAlign.center))),
+                child: Text(AppLocalizations.of(context)!.welcome,
+                    textAlign: TextAlign.center)),
           ),
           backgroundColor: Colors.transparent,
           body: Center(
