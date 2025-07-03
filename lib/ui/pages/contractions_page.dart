@@ -369,7 +369,8 @@ class ContractionsPage extends StatelessWidget {
     return BlocListener<ProportionalControlFileBloc, RemoFileState>(
       listener: (context, state) async {
         if (state is RecordingComplete) {
-          Navigator.pushNamed(context, "/save_page", arguments: SavePageMode.biofeedback);
+          Navigator.pushNamed(context, "/save_page",
+              arguments: SavePageMode.biofeedback);
         }
       },
       child: Column(
@@ -394,7 +395,8 @@ class ContractionsPage extends StatelessWidget {
             StreamBuilder(
                 stream: state.repetitionsStream,
                 builder: (context, repetitions) => Text(
-                      AppLocalizations.of(context)!.repetitions(repetitions.data ?? 0),
+                      AppLocalizations.of(context)!
+                          .repetitions(repetitions.data ?? 0),
                       style: TextStyle(
                           fontSize: 26.adaptedFontSize,
                           fontWeight: FontWeight.w500,
@@ -415,9 +417,13 @@ class ContractionsPage extends StatelessWidget {
             RecordButton(
                 key: Key("test"),
                 recording: true,
-                onStopPressed: () => context
-                    .read<ProportionalControlFileBloc>()
-                    .add(StopRecording()))
+                onStopPressed: () {
+                  context.read<ProportionalControlBloc>().add(StopOperations());
+
+                  context
+                      .read<ProportionalControlFileBloc>()
+                      .add(StopRecording());
+                })
           ]),
     );
   }
