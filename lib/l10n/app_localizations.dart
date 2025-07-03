@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @feed_back.
   ///
   /// In en, this message translates to:
-  /// **'Feed back'**
+  /// **'Feedback'**
   String get feed_back;
 
   /// No description provided for @start_calibrating.
@@ -379,6 +379,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed!'**
   String get exercise_completed;
+
+  /// No description provided for @stop_exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to stop the exercise'**
+  String get stop_exercise;
+
+  /// No description provided for @repetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Repetitions: {repetition_count}'**
+  String repetitions(int repetition_count);
 }
 
 class _AppLocalizationsDelegate

@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure want to delete the file?\nYou will not be able to recover it.';
 
   @override
-  String get feed_back => 'Feed back';
+  String get feed_back => 'Feedback';
 
   @override
   String get start_calibrating => 'Start';
@@ -157,4 +157,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exercise_completed => 'Completed!';
+
+  @override
+  String get stop_exercise => 'Click to stop the exercise';
+
+  @override
+  String repetitions(int repetition_count) {
+    return 'Repetitions: $repetition_count';
+  }
 }

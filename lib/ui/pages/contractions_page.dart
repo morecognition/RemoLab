@@ -8,6 +8,7 @@ import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/ui/components/trapezoid_clip.dart';
 import 'package:remorder/ui/components/recording_button.dart';
 import 'package:remorder/ui/components/remo_slider.dart';
+import 'package:remorder/ui/pages/save_page.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../components/ring_widget.dart';
@@ -357,49 +358,74 @@ class ContractionsPage extends StatelessWidget {
   }
 
   Widget _buildBiofeedbackBody(BuildContext context, Active state) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Step 3',
+    if (context.read<ProportionalControlFileBloc>().state is! Recording) {
+      context.read<ProportionalControlFileBloc>().add(StartRecordingBiofeedback(
+          state.cyclicFeedbackStream,
+          state.repetitionsStream,
+          state.baseValue,
+          state.mvc));
+    }
+
+    return BlocListener<ProportionalControlFileBloc, RemoFileState>(
+      listener: (context, state) async {
+        if (state is RecordingComplete) {
+          Navigator.pushNamed(context, "/save_page",
+              arguments: SavePageMode.biofeedback);
+        }
+      },
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(AppLocalizations.of(context)!.step_3,
+                style: TextStyle(
+                    fontSize: 26.adaptedFontSize,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2B3A51))),
+            SizedBox(height: 8.adaptedHeight),
+            Text(
+              AppLocalizations.of(context)!.biofeedback_message,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 26.adaptedFontSize,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2B3A51))),
-          SizedBox(height: 8.adaptedHeight),
-          Text(
-            AppLocalizations.of(context)!.biofeedback_message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 15.adaptedFontSize,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF2B3A51)),
-          ),
-          SizedBox(height: 25.adaptedHeight),
-          StreamBuilder(
-              stream: state.repetitionsStream,
-              builder: (context, repetitions) => Text(
-                    "Repetitions: ${repetitions.data ?? 0}",
-                    style: TextStyle(
-                        fontSize: 26.adaptedFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF66A6AA)),
-                  )),
-          StreamBuilder(
-              stream: state.cyclicFeedbackStream,
-              builder: (context, feedbackValue) =>
-                  RemoSlider(feedbackValue.data ?? 0)),
-          SizedBox(height: 35.adaptedHeight),
-          Text(
-            "Clicca per fermare l'esercizio",
-            style: TextStyle(
-                fontSize: 14.adaptedFontSize,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF4C5460)),
-          ),
-          RecordButton(
-              key: Key("test"), recording: true, onStopPressed: () => {})
-        ]);
+                  fontSize: 15.adaptedFontSize,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF2B3A51)),
+            ),
+            SizedBox(height: 25.adaptedHeight),
+            StreamBuilder(
+                stream: state.repetitionsStream,
+                builder: (context, repetitions) => Text(
+                      AppLocalizations.of(context)!
+                          .repetitions(repetitions.data ?? 0),
+                      style: TextStyle(
+                          fontSize: 26.adaptedFontSize,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF66A6AA)),
+                    )),
+            StreamBuilder(
+                stream: state.cyclicFeedbackStream,
+                builder: (context, feedbackValue) =>
+                    RemoSlider(feedbackValue.data ?? 0)),
+            SizedBox(height: 35.adaptedHeight),
+            Text(
+              AppLocalizations.of(context)!.stop_exercise,
+              style: TextStyle(
+                  fontSize: 14.adaptedFontSize,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF4C5460)),
+            ),
+            RecordButton(
+                key: Key("test"),
+                recording: true,
+                onStopPressed: () {
+                  context.read<ProportionalControlBloc>().add(StopOperations());
+
+                  context
+                      .read<ProportionalControlFileBloc>()
+                      .add(StopRecording());
+                })
+          ]),
+    );
   }
 
   Widget _buildPreExerciseBody(BuildContext context, RemoState remoState,
