@@ -58,8 +58,7 @@ class RemoTransmission extends StatelessWidget {
                             if (context.mounted) {
                               context.read<RemoFileBloc>().add(
                                   OpenRmsRecord(result.files.single.path!));
-                              Navigator.pushNamed(context, "/playback_page")
-                                  .then((c) {
+                              Navigator.pushNamed(context, "/playback_page") .then((c) {
                                 if (context.mounted) {
                                   context.read<RemoFileBloc>().add(Reset());
                                 }

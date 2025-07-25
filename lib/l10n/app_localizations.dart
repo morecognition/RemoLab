@@ -224,6 +224,24 @@ abstract class AppLocalizations {
   /// **'Feedback'**
   String get graph_2;
 
+  /// No description provided for @seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds'**
+  String get seconds;
+
+  /// No description provided for @microvolts.
+  ///
+  /// In en, this message translates to:
+  /// **'Microvolts'**
+  String get microvolts;
+
+  /// No description provided for @tap_to_record.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to record'**
+  String get tap_to_record;
+
   /// No description provided for @calibration.
   ///
   /// In en, this message translates to:
@@ -320,16 +338,10 @@ abstract class AppLocalizations {
   /// **'Start'**
   String get start_calibrating;
 
-  /// No description provided for @pre_calibration_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.'**
-  String get pre_calibration_message;
-
   /// No description provided for @rest_calibration_message.
   ///
   /// In en, this message translates to:
-  /// **'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.'**
+  /// **'Relax the muscle.\nStay in the internal blue circle for 5 seconds'**
   String get rest_calibration_message;
 
   /// No description provided for @pre_max_calibration_message.

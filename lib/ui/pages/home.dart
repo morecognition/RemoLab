@@ -18,7 +18,9 @@ class Home extends StatelessWidget {
       children: [
         Image.asset(
           "assets/home_background.png",
-          fit: BoxFit.fitHeight,
+          width: 375.adaptedWidth,
+          height: 812.adaptedHeight,
+          fit: BoxFit.cover,
         ),
         Scaffold(
           appBar: AppBar(

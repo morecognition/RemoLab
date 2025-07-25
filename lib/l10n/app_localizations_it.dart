@@ -73,6 +73,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get graph_2 => 'Feedback';
 
   @override
+  String get seconds => 'Secondi';
+
+  @override
+  String get microvolts => 'Microvolt';
+
+  @override
+  String get tap_to_record => 'Tocca per registrare';
+
+  @override
   String get calibration => 'Calibrazione';
 
   @override
@@ -123,12 +132,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get start_calibrating => 'Inizia';
 
   @override
-  String get pre_calibration_message =>
-      'Rilassa il muscolo.\nStiamo registrando l\'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.';
-
-  @override
   String get rest_calibration_message =>
-      'Rilassa il muscolo.\nStiamo registrando l\'attività a riposo per 5 secondi.\nRimani nel cerchio interno azzurro.';
+      'Rilassa il muscolo.\nRimani nel cerchio più interno azzurro per 5 secondi';
 
   @override
   String get pre_max_calibration_message =>
@@ -147,13 +152,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Fai l\'esercizio come indicato dal terapista.\nIl movimento sullo schermo segue la tua attivazione muscolare';
 
   @override
-  String get step_1 => 'Step 1';
+  String get step_1 => 'Fase 1';
 
   @override
-  String get step_2 => 'Step 2';
+  String get step_2 => 'Fase 2';
 
   @override
-  String get step_3 => 'Step 3';
+  String get step_3 => 'Fase 3';
 
   @override
   String get next_exercise => 'Prossimo esercizio';

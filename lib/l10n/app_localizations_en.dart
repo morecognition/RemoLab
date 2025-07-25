@@ -73,6 +73,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get graph_2 => 'Feedback';
 
   @override
+  String get seconds => 'Seconds';
+
+  @override
+  String get microvolts => 'Microvolts';
+
+  @override
+  String get tap_to_record => 'Tap to record';
+
+  @override
   String get calibration => 'Calibration';
 
   @override
@@ -123,12 +132,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get start_calibrating => 'Start';
 
   @override
-  String get pre_calibration_message =>
-      'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.';
-
-  @override
   String get rest_calibration_message =>
-      'Relax the muscle.\nWe are recording the resting activity for 5 seconds.\nStay in the blue inner circle.';
+      'Relax the muscle.\nStay in the internal blue circle for 5 seconds';
 
   @override
   String get pre_max_calibration_message =>

@@ -1,6 +1,7 @@
 
 import 'package:design_sync/design_sync.dart';
 import 'package:flutter/material.dart';
+import 'package:remorder/l10n/app_localizations.dart';
 
 class RecordButton extends StatelessWidget {
   const RecordButton(
@@ -39,7 +40,7 @@ class RecordButton extends StatelessWidget {
       return Stack(alignment: Alignment.center, children: [
         Transform.translate(
           offset: Offset(0, -28),
-          child: Text("Tap to record",
+          child: Text(AppLocalizations.of(context)!.tap_to_record,
               style: TextStyle(
                   color: Color(0xFF2B3A51), fontSize: 15.adaptedFontSize)),
         ),

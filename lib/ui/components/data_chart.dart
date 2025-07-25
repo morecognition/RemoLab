@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
+import 'package:remorder/l10n/app_localizations.dart';
 
 class DataChart extends StatefulWidget {
   @override
@@ -44,6 +45,8 @@ class _DataChartState extends State<DataChart> {
   double offset = 0;
   double maxY = 350;
   double minY = 0;
+
+  double verticalInterval = 1;
 
   double recordingStart = -1;
   double recordingEnd = -1;
@@ -204,7 +207,7 @@ class _DataChartState extends State<DataChart> {
         ),
         Transform.translate(
             offset: Offset(25, 10),
-            child: Text("Microvolts", style: labelStyle)),
+            child: Text(AppLocalizations.of(context)!.microvolts, style: labelStyle)),
         Transform.translate(
             offset: Offset(235.adaptedWidth, -3.adaptedHeight),
             child: Row(
@@ -245,6 +248,7 @@ class _DataChartState extends State<DataChart> {
   FlGridData get gridData => FlGridData(
         show: true,
         horizontalInterval: (maxY - minY) / 10.0,
+        verticalInterval: verticalInterval,
         getDrawingHorizontalLine: (value) => FlLine(
           color: lineColor,
           strokeWidth: 1,
@@ -282,11 +286,12 @@ class _DataChartState extends State<DataChart> {
           axisNameWidget: Transform.translate(
             offset: Offset(5, 0),
             child: Text(
-              "Seconds",
+              AppLocalizations.of(context)!.seconds,
               style: labelStyle,
             ),
           ),
           sideTitles: SideTitles(
+              interval: verticalInterval,
               showTitles: true,
               maxIncluded: false,
               minIncluded: false,

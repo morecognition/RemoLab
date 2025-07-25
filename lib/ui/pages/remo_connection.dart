@@ -19,7 +19,9 @@ class RemoConnection extends StatelessWidget {
           children: [
             Image.asset(
               "assets/page_background.png",
-              fit: BoxFit.fitHeight,
+              width: 375.adaptedWidth,
+              height: 812.adaptedHeight,
+              fit: BoxFit.cover,
             ),
             Scaffold(
                 appBar: AppBar(

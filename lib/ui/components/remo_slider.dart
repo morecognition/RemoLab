@@ -9,28 +9,34 @@ class RemoSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var barHeight = 260.adaptedHeight;
+    var barHeight = 220.adaptedHeight;
     var iconWidth = 128.adaptedWidth;
     var iconHeight = 63.adaptedHeight;
 
-    var offset = Offset(0, ((1 - progress) * barHeight / iconHeight) + 0.5);
+    var offset = Offset(0, ((1 - progress) * barHeight / iconHeight) - barHeight / iconHeight / 2);
 
-    return Column(
-      verticalDirection: VerticalDirection.up,
-      children: [
-        Container(
-            width: 15.adaptedWidth,
-            height: barHeight,
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius:
-                    BorderRadius.all(Radius.circular(4.adaptedRadius)))),
-        AnimatedSlide(
-            offset: offset,
-            duration: const Duration(milliseconds: 100),
-            curve: Curves.linear,
-            child: _sliderIcon(progress, iconWidth, iconHeight))
-      ],
+    return SizedBox(
+      height: 245.adaptedHeight,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: 15.adaptedWidth,
+              height: barHeight,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(4.adaptedRadius)))),
+          ),
+          Center(
+            child: AnimatedSlide(
+                offset: offset,
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.linear,
+                child: _sliderIcon(progress, iconWidth, iconHeight)),
+          )
+        ],
+      ),
     );
   }
 
