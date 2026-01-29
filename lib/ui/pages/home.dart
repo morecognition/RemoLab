@@ -117,18 +117,21 @@ class Home extends StatelessWidget {
   }
 
   void goToNextPage(BuildContext context) async {
-    var bluetoothScan = await Permission.bluetoothScan.request();
-    var bluetoothConnect = await Permission.bluetoothConnect.request();
-    await Permission.bluetooth.request();
-
+    var bluetoothScan = PermissionStatus.granted;
+    var bluetoothConnect = PermissionStatus.granted;
     var locationUse = PermissionStatus.granted;
 
     if (Platform.isAndroid) {
-      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      bluetoothScan = await Permission.bluetoothScan.request();
+      bluetoothConnect = await Permission.bluetoothConnect.request();
 
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
       if (androidInfo.version.sdkInt <= 30) {
         locationUse = await Permission.locationWhenInUse.request();
       }
+    } else if (Platform.isIOS) {
+      // iOS mostra il prompt Bluetooth solo quando si avvia lo scan/connessione.
+      locationUse = PermissionStatus.granted;
     }
 
     if (bluetoothScan.isGranted &&

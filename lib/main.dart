@@ -22,7 +22,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -38,8 +37,10 @@ class MyApp extends StatelessWidget {
           BlocProvider<BluetoothBloc>(create: (context) => BluetoothBloc()),
           BlocProvider<RemoBloc>(create: (context) => RemoBloc()),
           BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc()),
-          BlocProvider<ProportionalControlBloc>(create: (context) => ProportionalControlBloc()),
-          BlocProvider<ProportionalControlFileBloc>(create: (context) => ProportionalControlFileBloc())
+          BlocProvider<ProportionalControlBloc>(
+              create: (context) => ProportionalControlBloc()),
+          BlocProvider<ProportionalControlFileBloc>(
+              create: (context) => ProportionalControlFileBloc())
         ],
         child: Builder(builder: (context) {
           return MaterialApp(
@@ -101,7 +102,8 @@ class MyApp extends StatelessWidget {
               '/pairing/connection': (context) => const RemoConnection(),
               '/home': (context) => const Home(),
               '/remo_transmission': (context) => const RemoTransmission(),
-              '/remo_transmission/contractions': (context) => const ContractionsPage(),
+              '/remo_transmission/contractions': (context) =>
+                  const ContractionsPage(),
               '/save_page': (context) => const SavePage(),
               '/playback_page': (context) => const RemoPlayback(),
               '/imu_debug': (context) => const ImuDebug(),

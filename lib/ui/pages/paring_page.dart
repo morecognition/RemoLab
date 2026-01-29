@@ -113,52 +113,72 @@ class PairingPage extends StatelessWidget {
                           }
                         },
                   icon: Image.asset("assets/add_file_icon.png",
-                      width: 36.adaptedWidth,
-                      height: 36.adaptedHeight));
+                      width: 36.adaptedWidth, height: 36.adaptedHeight));
             }))
       ],
     );
   }
 
   void goToNextPage(BuildContext context) async {
-    var bluetoothScan = await Permission.bluetoothScan.request();
-    var bluetoothConnect = await Permission.bluetoothConnect.request();
-    await Permission.bluetooth.request();
-
+    var bluetoothScan = PermissionStatus.granted;
+    var bluetoothConnect = PermissionStatus.granted;
     var locationUse = PermissionStatus.granted;
 
     if (Platform.isAndroid) {
-      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      bluetoothScan = await Permission.bluetoothScan.request();
+      bluetoothConnect = await Permission.bluetoothConnect.request();
 
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
       if (androidInfo.version.sdkInt <= 30) {
         locationUse = await Permission.locationWhenInUse.request();
       }
+    } else if (Platform.isIOS) {
+      // iOS mostra il prompt Bluetooth solo quando si avvia lo scan/connessione.
+      // Non bloccare la navigazione sui permessi location.
+      locationUse = PermissionStatus.granted;
     }
 
-    if (bluetoothScan.isGranted &&
+    bool allGranted = bluetoothScan.isGranted &&
         bluetoothConnect.isGranted &&
-        locationUse.isGranted &&
-        context.mounted) {
+        locationUse.isGranted;
+
+    if (allGranted && context.mounted) {
       //Set bt state to initial
       context.read<BluetoothBloc>().add(OnReset());
       Navigator.pushNamed(context, '/pairing/connection');
     } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.permission_bt),
-            content: Text(AppLocalizations.of(context)!.permission_bt_request),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () =>
-                    Navigator.pop(context, AppLocalizations.of(context)!.ok),
-                child: Text(AppLocalizations.of(context)!.ok),
-              ),
-            ],
-          );
-        },
-      );
+      if (context.mounted) {
+        // Controlla se qualche permesso è permanentemente negato
+        bool hasPermamentlyDenied = locationUse.isPermanentlyDenied;
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(AppLocalizations.of(context)!.permission_bt),
+              content: Text(hasPermamentlyDenied
+                  ? 'Il permesso di posizione è stato negato. Per utilizzare l\'app e cercare dispositivi Bluetooth, vai nelle Impostazioni e abilita il permesso di Posizione.'
+                  : AppLocalizations.of(context)!.permission_bt_request),
+              actions: <Widget>[
+                if (hasPermamentlyDenied)
+                  TextButton(
+                    onPressed: () {
+                      openAppSettings();
+                      Navigator.pop(context);
+                    },
+                    child: Text('Apri Impostazioni'),
+                  ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(hasPermamentlyDenied
+                      ? 'Annulla'
+                      : AppLocalizations.of(context)!.ok),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 }
