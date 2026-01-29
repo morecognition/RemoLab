@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.morecognition.remorder_flutter"
+    namespace = "com.morecognition.remolab_flutter"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.morecognition.remorder_flutter"
+        applicationId = "com.morecognition.remolab_flutter"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
