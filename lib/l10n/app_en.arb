@@ -1,6 +1,6 @@
 {
   "ok": "Ok",
-  "welcome": "Welcome to Remorder",
+  "welcome": "Welcome to Remo Lab",
   "start": "Start",
   "try_again": "Try again",
   "device": "Device",
@@ -19,7 +19,7 @@
   "pairing_fail": "Pairing failed",
   "data_visualization": "Data visualization",
   "graph_1": "Graph",
-  "graph_2": "Feedback",
+  "graph_2": "BFB",
   "seconds": "Seconds",
   "microvolts": "Microvolts",
   "tap_to_record": "Tap to record",

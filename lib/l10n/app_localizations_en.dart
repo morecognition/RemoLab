@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'Ok';
 
   @override
-  String get welcome => 'Welcome to Remorder';
+  String get welcome => 'Welcome to Remo Lab';
 
   @override
   String get start => 'Start';
@@ -70,7 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get graph_1 => 'Graph';
 
   @override
-  String get graph_2 => 'Feedback';
+  String get graph_2 => 'BFB';
 
   @override
   String get seconds => 'Seconds';

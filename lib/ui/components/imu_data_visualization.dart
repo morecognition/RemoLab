@@ -24,8 +24,7 @@ class _ImuDataVisualizationState extends State<ImuDataVisualization> {
   Widget build(BuildContext context) {
     return
         Text("Acceleration: [${_latestImuData?.acceleration.x.toStringAsFixed(4)}, ${_latestImuData?.acceleration.y.toStringAsFixed(4)}, ${_latestImuData?.acceleration.z.toStringAsFixed(4)}]\n"
-            "AngularVelocity: [${_latestImuData?.angularVelocity.x.toStringAsFixed(4)}, ${_latestImuData?.angularVelocity.y.toStringAsFixed(4)}, ${_latestImuData?.angularVelocity.z.toStringAsFixed(4)}]\n"
-            "Magnetometer: [${_latestImuData?.magneticField.x.toStringAsFixed(4)}, ${_latestImuData?.magneticField.y.toStringAsFixed(4)}, ${_latestImuData?.magneticField.z.toStringAsFixed(4)}]");
+            "AngularVelocity: [${_latestImuData?.angularVelocity.x.toStringAsFixed(4)}, ${_latestImuData?.angularVelocity.y.toStringAsFixed(4)}, ${_latestImuData?.angularVelocity.z.toStringAsFixed(4)}]\n");
   }
 
   @override

@@ -135,7 +135,7 @@ class ContractionsPage extends StatelessWidget {
                   .read<ProportionalControlBloc>()
                   .add(PrepareRecordingMvc(rmsStream)),
               () => context.read<ProportionalControlBloc>().add(
-                  StartRecordingBaseValue(rmsStream)));
+                  PrepareRecordingBaseValue(rmsStream)));
 
         case MvcProportionalControlState mvcState:
           return _buildMaxCalibrationBody(context, mvcState, rmsStream);
@@ -148,7 +148,7 @@ class ContractionsPage extends StatelessWidget {
                   .read<ProportionalControlBloc>()
                   .add(PrepareProportionalControl(rmsStream)),
               () => context.read<ProportionalControlBloc>().add(
-                  StartRecordingMvc(rmsStream)));
+                  PrepareRecordingMvc(rmsStream)));
 
         case FeedbackProportionalControlState feedbackState:
           return _buildBiofeedbackBody(context, feedbackState, rmsStream);

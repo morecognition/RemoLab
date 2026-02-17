@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Remorder'**
+  /// **'Welcome to Remo Lab'**
   String get welcome;
 
   /// No description provided for @start.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @graph_2.
   ///
   /// In en, this message translates to:
-  /// **'Feedback'**
+  /// **'BFB'**
   String get graph_2;
 
   /// No description provided for @seconds.
