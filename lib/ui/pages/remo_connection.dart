@@ -7,8 +7,16 @@ import 'package:remorder/ui/components/loading_ring.dart';
 
 import '../../l10n/app_localizations.dart';
 
+Future<bool> _defaultBluetoothChecker() async =>
+    await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
+
 class RemoConnection extends StatefulWidget {
-  const RemoConnection({super.key});
+  const RemoConnection({
+    super.key,
+    this.bluetoothChecker = _defaultBluetoothChecker,
+  });
+
+  final Future<bool> Function() bluetoothChecker;
 
   @override
   State<RemoConnection> createState() => _RemoConnectionState();
@@ -21,18 +29,13 @@ class _RemoConnectionState extends State<RemoConnection> {
   @override
   void initState() {
     super.initState();
-    _isBluetoothOnFuture = _checkBluetoothIsOn();
+    _isBluetoothOnFuture = widget.bluetoothChecker();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (context.read<BluetoothBloc>().state is BluetoothInitial) {
         context.read<BluetoothBloc>().add(OnStartDiscovery());
       }
     });
-  }
-
-  Future<bool> _checkBluetoothIsOn() async {
-    return await FlutterBluePlus.adapterState.first ==
-        BluetoothAdapterState.on;
   }
 
   @override

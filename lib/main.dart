@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:design_sync/design_sync.dart';
+import 'package:remorder/services/file_picker_saver.dart';
 import 'package:remorder/ui/pages/contractions_page.dart';
 import 'package:remorder/ui/pages/home.dart';
 import 'package:remorder/ui/pages/imu_debug.dart';
@@ -19,6 +20,8 @@ void main() async {
   DesignSync.initialize(figmaCanvasSize: Size(375, 812));
   runApp(const MyApp());
 }
+
+final _fileSaver = FilePickerSaver();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -38,9 +41,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<BluetoothBloc>(create: (context) => BluetoothBloc()),
           BlocProvider<RemoBloc>(create: (context) => RemoBloc()),
-          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc()),
+          BlocProvider<RemoFileBloc>(create: (context) => RemoFileBloc(fileSaver: _fileSaver)),
           BlocProvider<ProportionalControlBloc>(create: (context) => ProportionalControlBloc()),
-          BlocProvider<ProportionalControlFileBloc>(create: (context) => ProportionalControlFileBloc())
+          BlocProvider<ProportionalControlFileBloc>(create: (context) => ProportionalControlFileBloc(fileSaver: _fileSaver))
         ],
         child: Builder(builder: (context) {
           return MaterialApp(
