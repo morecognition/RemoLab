@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
+import 'package:remorder/ui/components/channel_button.dart';
 import 'package:remorder/ui/components/recording_button.dart';
 import 'package:remorder/ui/pages/save_page.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -13,9 +14,14 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../l10n/app_localizations.dart';
 import '../components/data_chart.dart';
 
-class RemoTransmission extends StatelessWidget {
+class RemoTransmission extends StatefulWidget {
   const RemoTransmission({super.key});
 
+  @override
+  State<RemoTransmission> createState() => _RemoTransmissionState();
+}
+
+class _RemoTransmissionState extends State<RemoTransmission> {
   static const channelColors = [
     Color(0xFFFC7F8E),
     Color(0xFFFAA869),
@@ -28,8 +34,23 @@ class RemoTransmission extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     WakelockPlus.enable();
+    final remoState = context.read<RemoBloc>().state;
+    if (remoState is Connected) {
+      context.read<RemoBloc>().add(OnStartTransmission());
+    }
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -42,7 +63,8 @@ class RemoTransmission extends StatelessWidget {
               BlocBuilder<RemoFileBloc, RemoFileState>(
                   builder: (context, remoFileState) {
                 return IconButton(
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    padding: EdgeInsets.fromLTRB(
+                        16.adaptedWidth, 0, 16.adaptedWidth, 0),
                     onPressed: remoFileState is Recording
                         ? null
                         : () async {
@@ -58,7 +80,8 @@ class RemoTransmission extends StatelessWidget {
                             if (context.mounted) {
                               context.read<RemoFileBloc>().add(
                                   OpenRmsRecord(result.files.single.path!));
-                              Navigator.pushNamed(context, "/playback_page") .then((c) {
+                              Navigator.pushNamed(context, "/playback_page")
+                                  .then((c) {
                                 if (context.mounted) {
                                   context.read<RemoFileBloc>().add(Reset());
                                 }
@@ -76,13 +99,14 @@ class RemoTransmission extends StatelessWidget {
                 textAlign: TextAlign.center,
                 AppLocalizations.of(context)!.data_visualization,
                 style: TextStyle(
-                    color: Color(0xFF2B3A51),
+                    color: const Color(0xFF2B3A51),
                     fontSize: 20.adaptedFontSize,
                     fontWeight: FontWeight.w700),
               )),
               SizedBox(height: 36.adaptedHeight),
               IconButton(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  padding: EdgeInsets.fromLTRB(
+                      16.adaptedWidth, 0, 16.adaptedWidth, 0),
                   onPressed: () => Navigator.pushNamed(context, "/imu_debug"),
                   icon: Image.asset(
                     "assets/imu_debug_icon.png",
@@ -96,12 +120,13 @@ class RemoTransmission extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F7FF),
       body: BlocProvider<ChartBloc>(
         create: (context) => ChartBloc(),
-        child: BlocBuilder<RemoBloc, RemoState>(
-          builder: (builderContext, remoState) {
+        child: BlocConsumer<RemoBloc, RemoState>(
+          listener: (context, remoState) {
             if (remoState is Connected) {
-              builderContext.read<RemoBloc>().add(OnStartTransmission());
+              context.read<RemoBloc>().add(OnStartTransmission());
             }
-
+          },
+          builder: (builderContext, remoState) {
             if (remoState is StartingTransmission ||
                 remoState is StoppingTransmission) {
               return const Center(
@@ -112,7 +137,8 @@ class RemoTransmission extends StatelessWidget {
             return BlocListener<RemoFileBloc, RemoFileState>(
               listener: (context, state) async {
                 if (state is RecordingComplete) {
-                  Navigator.pushNamed(context, "/save_page", arguments: SavePageMode.rms);
+                  Navigator.pushNamed(context, "/save_page",
+                      arguments: SavePageMode.rms);
                 }
               },
               child: Center(
@@ -132,19 +158,18 @@ class RemoTransmission extends StatelessWidget {
                         height: 432.adaptedHeight,
                         color: Colors.white,
                         child: BlocBuilder<RemoFileBloc, RemoFileState>(
-                          builder: (context, remoFileState) {
-                            return remoState is TransmissionStarted
-                                ? DataChart(
-                                    rmsDataStream: remoState.rmsDataStream,
-                                    colors: channelColors,
-                                    isRecording: remoFileState is Recording,
-                                    key: Key("remo chart"))
-                                : DataChart(
-                                    rmsDataStream: Stream.empty(),
-                                    colors: channelColors,
-                                    key: Key("empty chart"));
-                          }
-                        ),
+                            builder: (context, remoFileState) {
+                          return remoState is TransmissionStarted
+                              ? DataChart(
+                                  rmsDataStream: remoState.rmsDataStream,
+                                  colors: channelColors,
+                                  isRecording: remoFileState is Recording,
+                                  key: const Key("remo chart"))
+                              : DataChart(
+                                  rmsDataStream: Stream.empty(),
+                                  colors: channelColors,
+                                  key: const Key("empty chart"));
+                        }),
                       ),
                       SizedBox(height: 15.adaptedHeight),
                       BlocBuilder<RemoFileBloc, RemoFileState>(
@@ -176,7 +201,7 @@ class RemoTransmission extends StatelessWidget {
     return BlocBuilder<ChartBloc, ChartState>(
       builder: (context, chartState) => Row(
         children: [
-          Spacer(),
+          const Spacer(),
           FilledButton(
             onPressed: () => chartState is LineState
                 ? null
@@ -201,11 +226,12 @@ class RemoTransmission extends StatelessWidget {
                         ? Colors.white
                         : const Color(0xFF93959B))),
           ),
-          Spacer(),
+          const Spacer(),
           FilledButton(
             onPressed: () => chartState is RadarState
                 ? null
-                : Navigator.pushNamed(context, "/remo_transmission/contractions"),
+                : Navigator.pushNamed(
+                    context, "/remo_transmission/contractions"),
             style: FilledButton.styleFrom(
               fixedSize: Size(
                 164.adaptedWidth,
@@ -226,7 +252,7 @@ class RemoTransmission extends StatelessWidget {
                         ? Colors.white
                         : const Color(0xFF93959B))),
           ),
-          Spacer()
+          const Spacer()
         ],
       ),
     );
@@ -238,64 +264,29 @@ class RemoTransmission extends StatelessWidget {
         Row(
           children: [
             const Spacer(),
-            _ColorButton(color: channelColors[0], text: 'Ch1'),
+            ChannelButton(color: channelColors[0], text: 'Ch1'),
             const Spacer(),
-            _ColorButton(color: channelColors[1], text: 'Ch2'),
+            ChannelButton(color: channelColors[1], text: 'Ch2'),
             const Spacer(),
-            _ColorButton(color: channelColors[2], text: 'Ch3'),
+            ChannelButton(color: channelColors[2], text: 'Ch3'),
             const Spacer(),
-            _ColorButton(color: channelColors[3], text: 'Ch4'),
+            ChannelButton(color: channelColors[3], text: 'Ch4'),
             const Spacer(),
           ],
         ),
         SizedBox(height: 12.adaptedHeight),
         Row(children: [
           const Spacer(),
-          _ColorButton(color: channelColors[4], text: 'Ch5'),
+          ChannelButton(color: channelColors[4], text: 'Ch5'),
           const Spacer(),
-          _ColorButton(color: channelColors[5], text: 'Ch6'),
+          ChannelButton(color: channelColors[5], text: 'Ch6'),
           const Spacer(),
-          _ColorButton(color: channelColors[6], text: 'Ch7'),
+          ChannelButton(color: channelColors[6], text: 'Ch7'),
           const Spacer(),
-          _ColorButton(color: channelColors[7], text: 'Ch8'),
+          ChannelButton(color: channelColors[7], text: 'Ch8'),
           const Spacer()
         ]),
       ],
-    );
-  }
-}
-
-class _ColorButton extends StatelessWidget {
-  const _ColorButton({required this.color, required this.text});
-
-  final Color color;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 74.adaptedWidth,
-      height: 32.adaptedHeight,
-      child: TextButton.icon(
-        onPressed: () {},
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5.adaptedRadius)),
-              side: BorderSide(color: Color(0xFFEDEDF5))),
-          backgroundColor: Colors.white,
-        ),
-        label: Text(text,
-            style:
-                TextStyle(fontSize: 12.adaptedFontSize, color: Colors.black)),
-        icon: Container(
-          width: 15.adaptedWidth,
-          height: 15.adaptedHeight,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
     );
   }
 }

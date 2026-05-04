@@ -16,11 +16,11 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
-          "assets/home_background.png",
-          width: 375.adaptedWidth,
-          height: 812.adaptedHeight,
-          fit: BoxFit.cover,
+        SizedBox.expand(
+          child: Image.asset(
+            "assets/home_background.png",
+            fit: BoxFit.cover,
+          ),
         ),
         Scaffold(
           appBar: AppBar(

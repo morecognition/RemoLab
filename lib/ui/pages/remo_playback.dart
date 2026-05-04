@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_remo/flutter_remo.dart';
 import 'package:remorder/bloc/chart/chart_bloc.dart';
+import 'package:remorder/ui/components/channel_button.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../components/data_chart.dart';
 
-class RemoPlayback extends StatelessWidget {
+class RemoPlayback extends StatefulWidget {
   const RemoPlayback({super.key});
 
+  @override
+  State<RemoPlayback> createState() => _RemoPlaybackState();
+}
+
+class _RemoPlaybackState extends State<RemoPlayback> {
   static const channelColors = [
     Color(0xFFFC7F8E),
     Color(0xFFFAA869),
@@ -25,8 +31,19 @@ class RemoPlayback extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -44,7 +61,7 @@ class RemoPlayback extends StatelessWidget {
 
               return Text(pageName,
                   style: TextStyle(
-                      color: Color(0xFF2B3A51),
+                      color: const Color(0xFF2B3A51),
                       fontSize: 20.adaptedFontSize,
                       fontWeight: FontWeight.w700));
             },
@@ -79,11 +96,11 @@ class RemoPlayback extends StatelessWidget {
                                   Stream.fromIterable(remoFileState.rmsData),
                               colors: channelColors,
                               showAll: true,
-                              key: Key("remo chart"))
+                              key: const Key("remo chart"))
                           : DataChart(
                               rmsDataStream: Stream.empty(),
                               colors: channelColors,
-                              key: Key("empty chart")),
+                              key: const Key("empty chart")),
                     ),
                     SizedBox(height: 15.adaptedHeight),
                   ]),
@@ -98,7 +115,7 @@ class RemoPlayback extends StatelessWidget {
     return BlocBuilder<ChartBloc, ChartState>(
       builder: (context, chartState) => Row(
         children: [
-          Spacer(),
+          const Spacer(),
           FilledButton(
             onPressed: () => chartState is LineState
                 ? null
@@ -123,7 +140,7 @@ class RemoPlayback extends StatelessWidget {
                         ? Colors.white
                         : const Color(0xFF93959B))),
           ),
-          Spacer(),
+          const Spacer(),
           FilledButton(
             onPressed: () {},
             style: FilledButton.styleFrom(
@@ -142,7 +159,7 @@ class RemoPlayback extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF93959B))),
           ),
-          Spacer()
+          const Spacer()
         ],
       ),
     );
@@ -154,64 +171,29 @@ class RemoPlayback extends StatelessWidget {
         Row(
           children: [
             const Spacer(),
-            _ColorButton(color: channelColors[0], text: 'Ch1'),
+            ChannelButton(color: channelColors[0], text: 'Ch1'),
             const Spacer(),
-            _ColorButton(color: channelColors[1], text: 'Ch2'),
+            ChannelButton(color: channelColors[1], text: 'Ch2'),
             const Spacer(),
-            _ColorButton(color: channelColors[2], text: 'Ch3'),
+            ChannelButton(color: channelColors[2], text: 'Ch3'),
             const Spacer(),
-            _ColorButton(color: channelColors[3], text: 'Ch4'),
+            ChannelButton(color: channelColors[3], text: 'Ch4'),
             const Spacer(),
           ],
         ),
         SizedBox(height: 12.adaptedHeight),
         Row(children: [
           const Spacer(),
-          _ColorButton(color: channelColors[4], text: 'Ch5'),
+          ChannelButton(color: channelColors[4], text: 'Ch5'),
           const Spacer(),
-          _ColorButton(color: channelColors[5], text: 'Ch6'),
+          ChannelButton(color: channelColors[5], text: 'Ch6'),
           const Spacer(),
-          _ColorButton(color: channelColors[6], text: 'Ch7'),
+          ChannelButton(color: channelColors[6], text: 'Ch7'),
           const Spacer(),
-          _ColorButton(color: channelColors[7], text: 'Ch8'),
+          ChannelButton(color: channelColors[7], text: 'Ch8'),
           const Spacer()
         ]),
       ],
-    );
-  }
-}
-
-class _ColorButton extends StatelessWidget {
-  const _ColorButton({required this.color, required this.text});
-
-  final Color color;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 74.adaptedWidth,
-      height: 32.adaptedHeight,
-      child: TextButton.icon(
-        onPressed: () {},
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5.adaptedRadius)),
-              side: BorderSide(color: Color(0xFFEDEDF5))),
-          backgroundColor: Colors.white,
-        ),
-        label: Text(text,
-            style:
-                TextStyle(fontSize: 12.adaptedFontSize, color: Colors.black)),
-        icon: Container(
-          width: 15.adaptedWidth,
-          height: 15.adaptedHeight,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
     );
   }
 }

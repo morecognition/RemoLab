@@ -21,20 +21,30 @@ class _SaveState extends State<SavePage> {
   String selectedFileName = "";
   final _formKey = GlobalKey<FormState>();
   late SavePageMode _mode;
+  bool _modeInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_modeInitialized) {
+      _mode = ModalRoute.of(context)?.settings.arguments as SavePageMode? ??
+          SavePageMode.rms;
+      _modeInitialized = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    _mode = ModalRoute.of(context)!.settings.arguments as SavePageMode;
 
     return PopScope(
       canPop: false,
       child: Stack(
         children: [
-          Image.asset(
-            "assets/page_background.png",
-            width: 375.adaptedWidth,
-            height: 812.adaptedHeight,
-            fit: BoxFit.cover,
+          SizedBox.expand(
+            child: Image.asset(
+              "assets/page_background.png",
+              fit: BoxFit.cover,
+            ),
           ),
           Scaffold(
               appBar: AppBar(
@@ -61,10 +71,8 @@ class _SaveState extends State<SavePage> {
                   }
 
                   if (remoFileState is RemoFileReady) {
-                    Future.delayed(Duration(seconds: 2), () {
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
+                    Future.delayed(const Duration(seconds: 2), () {
+                      if (mounted) Navigator.pop(context);
                     });
                   }
 

@@ -14,7 +14,8 @@ import 'package:remorder/ui/pages/save_page.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
-  await Future.delayed(Duration(seconds: 1));
+  WidgetsFlutterBinding.ensureInitialized();
+  await Future.delayed(const Duration(seconds: 1));
   DesignSync.initialize(figmaCanvasSize: Size(375, 812));
   runApp(const MyApp());
 }
@@ -55,7 +56,6 @@ class MyApp extends StatelessWidget {
               textTheme: const TextTheme(
                 labelLarge: TextStyle(
                   fontSize: 16,
-                  fontFamily: 'Isidora Sans SemiBold',
                   color: Color.fromRGBO(255, 255, 255, 1),
                 ),
               ),

@@ -76,19 +76,15 @@ class _ExpandingCircleState extends State<ExpandingCircle>
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(duration: widget.duration, vsync: this)
-      ..addListener(() => controller.repeat());
+    controller = AnimationController(duration: widget.duration, vsync: this);
+
+    Future.delayed(widget.startDelay, () {
+      if (mounted) controller.repeat();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    controller.value = controller.upperBound;
-    Future.delayed(Duration(milliseconds: widget.startDelay.inMilliseconds),
-        () {
-      if (mounted) {
-        controller.forward(from: 0);
-      }
-    });
     return RecordingCircle(controller: controller, color: widget.color);
   }
 

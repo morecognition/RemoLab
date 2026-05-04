@@ -50,15 +50,3 @@ class RingPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Center(
-      child: RingWidget(
-        size: 150.0,
-        strokeWidth: 15.0,
-        color: Colors.green,
-      ),
-    ),
-  );
-}

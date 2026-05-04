@@ -44,8 +44,8 @@ class _ImuDataVisualizationState extends State<ImuDataVisualization> {
 
   @override
   void dispose() {
-    super.dispose();
     _imuStreamSubscription.cancel();
+    super.dispose();
   }
 
   ImuData? _latestImuData;

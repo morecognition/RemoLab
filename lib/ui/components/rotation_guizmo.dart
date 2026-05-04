@@ -45,9 +45,7 @@ class _RotationGizmoState extends State<RotationGizmo> {
       rotation: _rotation
     );
 
-    widget.imuDataStream
-        .first
-        .then((imuData) => _lastTimestamp = DateTime.timestamp());
+    _lastTimestamp = DateTime.timestamp();
 
     _imuStreamSubscription = widget.imuDataStream.listen(
       (imuData) {
@@ -80,8 +78,8 @@ class _RotationGizmoState extends State<RotationGizmo> {
 
   @override
   void dispose() {
-    super.dispose();
     _imuStreamSubscription.cancel();
+    super.dispose();
   }
 
   Vector3 quaternionToEuler(Quaternion q) {

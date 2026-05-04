@@ -13,42 +13,83 @@ import 'package:remorder/ui/pages/save_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../components/ring_widget.dart';
 
-class ContractionsPage extends StatelessWidget {
+class ContractionsPage extends StatefulWidget {
   const ContractionsPage({super.key});
 
+  @override
+  State<ContractionsPage> createState() => _ContractionsPageState();
+}
+
+class _ContractionsPageState extends State<ContractionsPage> {
   final maxStrenghtValue = 350;
   final maxBaseValue = 140;
 
+  Stream<RmsData> _currentRmsStream() {
+    final remoState = context.read<RemoBloc>().state;
+    return remoState is TransmissionStarted
+        ? remoState.rmsDataStream
+        : Stream<RmsData>.empty();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context
+          .read<ProportionalControlBloc>()
+          .add(PrepareRecordingBaseValue(_currentRmsStream()));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
+    return BlocListener<ProportionalControlBloc, ProportionalControlState>(
+      listener: (context, state) {
+        if (state is Inactive) {
+          context
+              .read<ProportionalControlBloc>()
+              .add(PrepareRecordingBaseValue(_currentRmsStream()));
+        }
+        if (state is Active) {
+          if (context.read<ProportionalControlFileBloc>().state is! Recording) {
+            context.read<ProportionalControlFileBloc>().add(
+                StartRecordingBiofeedback(
+                    state.cyclicFeedbackStream,
+                    state.repetitionsStream,
+                    state.baseValue,
+                    state.mvc));
+          }
+        }
+      },
+      child: Stack(children: [
+        Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: const Color(0xFFF6F7FF),
+            toolbarHeight: 50.adaptedHeight,
+            flexibleSpace: Container(
+                alignment: Alignment.bottomCenter,
+                child: Row(children: [
+                  SizedBox(height: 36.adaptedHeight),
+                  Expanded(child: _getTitle(context))
+                ])),
+            centerTitle: true,
+          ),
           backgroundColor: const Color(0xFFF6F7FF),
-          toolbarHeight: 50.adaptedHeight,
-          flexibleSpace: Container(
-              alignment: Alignment.bottomCenter,
-              child: Row(children: [
-                SizedBox(height: 36.adaptedHeight),
-                Expanded(
-                    child: _getTitle(context))
-              ])),
-          centerTitle: true,
+          body: BlocBuilder<RemoBloc, RemoState>(
+              builder: (builderContext, remoState) {
+            return Column(children: [
+              SizedBox(height: 16.adaptedHeight),
+              _buildChartButtons(context),
+              SizedBox(height: 30.adaptedHeight),
+              _getCorrectBody(builderContext, remoState),
+            ]);
+          }),
         ),
-        backgroundColor: const Color(0xFFF6F7FF),
-        body: BlocBuilder<RemoBloc, RemoState>(
-            builder: (builderContext, remoState) {
-          return Column(children: [
-            SizedBox(height: 16.adaptedHeight),
-            _buildChartButtons(context),
-            SizedBox(height: 30.adaptedHeight),
-            _getCorrectBody(builderContext, remoState),
-          ]);
-        }),
-      ),
-      _drawLoadFileButton(),
-    ]);
+        _drawLoadFileButton(),
+      ]),
+    );
   }
 
   Widget _drawLoadFileButton() {
@@ -88,7 +129,7 @@ class ContractionsPage extends StatelessWidget {
   }
 
   Widget _getTitle(BuildContext context) {
-    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+    return BlocBuilder<ProportionalControlBloc, ProportionalControlState>(
         builder: (context, state) {
       if (state is ReadyToStart || state is Active) {
         return _buildTitleWidget(AppLocalizations.of(context)!.recording);
@@ -103,25 +144,21 @@ class ContractionsPage extends StatelessWidget {
       textAlign: TextAlign.center,
       text,
       style: TextStyle(
-          color: Color(0xFF2B3A51),
+          color: const Color(0xFF2B3A51),
           fontSize: 20.adaptedFontSize,
           fontWeight: FontWeight.w700),
     );
   }
 
   Widget _getCorrectBody(BuildContext context, RemoState remoState) {
-    return BlocBuilder<ProportionalControlBloc, PropotionalControlState>(
+    return BlocBuilder<ProportionalControlBloc, ProportionalControlState>(
         builder: (context, state) {
-      // context.read<ProportionalControlBloc>().add(StartRecordingBaseValue(
-      //     remoState is TransmissionStarted
-      //         ? remoState.rmsDataStream
-      //         : Stream.empty()));
-
-      var rmsStream = remoState is TransmissionStarted ? remoState.rmsDataStream : Stream<RmsData>.empty();
+      var rmsStream = remoState is TransmissionStarted
+          ? remoState.rmsDataStream
+          : Stream<RmsData>.empty();
 
       switch (state) {
-        case Inactive _ :
-          context.read<ProportionalControlBloc>().add(PrepareRecordingBaseValue(rmsStream));
+        case Inactive _:
           return Container();
 
         case BaseValueProportionalControlState baseValueState:
@@ -134,8 +171,9 @@ class ContractionsPage extends StatelessWidget {
               () => context
                   .read<ProportionalControlBloc>()
                   .add(PrepareRecordingMvc(rmsStream)),
-              () => context.read<ProportionalControlBloc>().add(
-                  PrepareRecordingBaseValue(rmsStream)));
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareRecordingBaseValue(rmsStream)));
 
         case MvcProportionalControlState mvcState:
           return _buildMaxCalibrationBody(context, mvcState, rmsStream);
@@ -147,8 +185,9 @@ class ContractionsPage extends StatelessWidget {
               () => context
                   .read<ProportionalControlBloc>()
                   .add(PrepareProportionalControl(rmsStream)),
-              () => context.read<ProportionalControlBloc>().add(
-                  PrepareRecordingMvc(rmsStream)));
+              () => context
+                  .read<ProportionalControlBloc>()
+                  .add(PrepareRecordingMvc(rmsStream)));
 
         case FeedbackProportionalControlState feedbackState:
           return _buildBiofeedbackBody(context, feedbackState, rmsStream);
@@ -157,96 +196,93 @@ class ContractionsPage extends StatelessWidget {
     });
   }
 
-  Widget _buildRestCalibrationBody(
-      BuildContext context, BaseValueProportionalControlState state, Stream<RmsData> rmsStream) {
-        return Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: [
-              Text(
-                AppLocalizations.of(context)!.step_1,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 26.adaptedFontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
-              ),
-              Text(
-                AppLocalizations.of(context)!.rest_calibration_message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
-              ),
-              SizedBox(height: 10.adaptedHeight),
-              Stack(alignment: Alignment.center, children: [
-                Container(
-                  height: 246.adaptedHeight,
-                  width: 246.adaptedHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(246.adaptedHeight)),
-                    color: Colors.white,
-                    gradient: RadialGradient(
-                      radius: 0.5,
-                      colors: <Color>[
-                        Color(0x00FDBAB9),
-                        Color(0xCCFDBAB9),
-                      ],
-                      stops: <double>[0.7, 1.0],
-                    ),
-                  ),
+  Widget _buildRestCalibrationBody(BuildContext context,
+      BaseValueProportionalControlState state, Stream<RmsData> rmsStream) {
+    return Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 10,
+            children: [
+          Text(
+            AppLocalizations.of(context)!.step_1,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 26.adaptedFontSize,
+                fontWeight: FontWeight.w600,
+                color: Colors.black),
+          ),
+          Text(
+            AppLocalizations.of(context)!.rest_calibration_message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 20.adaptedFontSize,
+                fontWeight: FontWeight.w500,
+                color: Colors.black),
+          ),
+          SizedBox(height: 10.adaptedHeight),
+          Stack(alignment: Alignment.center, children: [
+            Container(
+              height: 246.adaptedHeight,
+              width: 246.adaptedHeight,
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.all(Radius.circular(246.adaptedHeight)),
+                color: Colors.white,
+                gradient: const RadialGradient(
+                  radius: 0.5,
+                  colors: <Color>[
+                    Color(0x00FDBAB9),
+                    Color(0xCCFDBAB9),
+                  ],
+                  stops: <double>[0.7, 1.0],
                 ),
-                //Red Gradient
-                Container(
-                  height: 170.adaptedHeight,
-                  width: 170.adaptedHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(170.adaptedHeight)),
-                    color: Colors.white,
-                    gradient:
-                        RadialGradient(radius: 0.5, colors: <Color>[
+              ),
+            ),
+            Container(
+              height: 170.adaptedHeight,
+              width: 170.adaptedHeight,
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.all(Radius.circular(170.adaptedHeight)),
+                color: Colors.white,
+                gradient: const RadialGradient(
+                    radius: 0.5,
+                    colors: <Color>[
                       Color(0x00B3E4E6),
                       Color(0xFFB3E3E5),
-                    ], stops: <double>[
-                      0.2,
-                      1.0
-                    ]),
-                  ),
-                ),
-                //Blue Gradient
-                Image.asset("assets/mascotte_emoji.png"),
-                //Remo Icon
-                StreamBuilder(
-                  stream: state.baseValueStream,
-                  builder: (context, baseValue) {
-                    return _drawBaseValueRing(
-                        30.adaptedHeight,
-                        246.adaptedHeight,
-                        clampDouble(
-                            (baseValue.data ?? 0) / maxBaseValue, 0, 1));
-                  }
-                )
-              ]),
-              SizedBox(height: 69.adaptedHeight),
-              state is RecordingBaseValue ?
-              StreamBuilder(
-                stream: state.progressStream,
-                builder: (context, progressValue) {
-                  return Text(
-                    "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.baseValueRecordingTime.inSeconds).ceil()}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 26.adaptedFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF66A6AA)),
-                  );
+                    ],
+                    stops: <double>[0.2, 1.0]),
+              ),
+            ),
+            Image.asset("assets/mascotte_emoji.png"),
+            StreamBuilder(
+                stream: state.baseValueStream,
+                builder: (context, baseValue) {
+                  return _drawBaseValueRing(
+                      30.adaptedHeight,
+                      246.adaptedHeight,
+                      clampDouble(
+                          (baseValue.data ?? 0) / maxBaseValue, 0, 1));
                 })
+          ]),
+          SizedBox(height: 69.adaptedHeight),
+          state is RecordingBaseValue
+              ? StreamBuilder(
+                  stream: state.progressStream,
+                  builder: (context, progressValue) {
+                    return Text(
+                      "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.baseValueRecordingTime.inSeconds).ceil()}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 26.adaptedFontSize,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF66A6AA)),
+                    );
+                  })
               : FilledButton(
-                  onPressed: () => context.read<ProportionalControlBloc>().add(StartRecordingBaseValue(rmsStream)),
+                  onPressed: () => context
+                      .read<ProportionalControlBloc>()
+                      .add(StartRecordingBaseValue(rmsStream)),
                   style: FilledButton.styleFrom(
                     fixedSize: Size(
                       343.adaptedWidth,
@@ -264,7 +300,7 @@ class ContractionsPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
                   )),
-            ]));
+        ]));
   }
 
   Widget _drawBaseValueRing(
@@ -275,12 +311,15 @@ class ContractionsPage extends StatelessWidget {
       child: CustomPaint(
         painter: RingPainter(
             strokeWidth: 6,
-            color: progressValue > 0.7 ? Color(0xFFFA7572) : Color(0xFF80D0D4)),
+            color: progressValue > 0.7
+                ? const Color(0xFFFA7572)
+                : const Color(0xFF80D0D4)),
       ),
     );
   }
 
-  Widget _buildMaxCalibrationBody(BuildContext context, MvcProportionalControlState state, Stream<RmsData> rmsStream) {
+  Widget _buildMaxCalibrationBody(BuildContext context,
+      MvcProportionalControlState state, Stream<RmsData> rmsStream) {
     return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -309,211 +348,64 @@ class ContractionsPage extends StatelessWidget {
               height: 86.adaptedHeight,
               "assets/mascotte_rythm_full.png"),
           StreamBuilder(
-            stream: state.mvcStream,
-            builder: (context, mvcValue) {
-              var normalizedValue =
-                  clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
-              return Stack(children: [
-                ClipPath(
-                  clipper: TrapezoidClip(),
-                  child: Stack(children: [
-                    Container(
-                      color: Color(0xFFBEE2E5),
-                      width: 97.adaptedWidth,
-                      height: 240.adaptedHeight,
-                    ),
-                    Positioned(
-                        bottom: 0,
-                        child: Container(
-                            color: Color(0xFF80D0D4),
-                            width: 97.adaptedWidth,
-                            height:
-                                240.adaptedHeight * normalizedValue)),
-                  ]),
-                ),
-                Positioned(
-                    bottom: 240.adaptedHeight * normalizedValue,
-                    left: 97.adaptedWidth / 2 -
-                        (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
-                                    normalizedValue) ??
-                                0) /
-                            2,
-                    child: Container(
-                      color: Color(0xFF80D0D4),
-                      width: lerpDouble(45.adaptedWidth,
-                          110.adaptedWidth, normalizedValue),
-                      height: 4.adaptedHeight,
-                    )),
-              ]);
-            }
-          ),
+              stream: state.mvcStream,
+              builder: (context, mvcValue) {
+                var normalizedValue =
+                    clampDouble((mvcValue.data ?? 0) / maxStrenghtValue, 0, 1);
+                return Stack(children: [
+                  ClipPath(
+                    clipper: TrapezoidClip(),
+                    child: Stack(children: [
+                      Container(
+                        color: const Color(0xFFBEE2E5),
+                        width: 97.adaptedWidth,
+                        height: 240.adaptedHeight,
+                      ),
+                      Positioned(
+                          bottom: 0,
+                          child: Container(
+                              color: const Color(0xFF80D0D4),
+                              width: 97.adaptedWidth,
+                              height: 240.adaptedHeight * normalizedValue)),
+                    ]),
+                  ),
+                  Positioned(
+                      bottom: 240.adaptedHeight * normalizedValue,
+                      left: 97.adaptedWidth / 2 -
+                          (lerpDouble(45.adaptedWidth, 110.adaptedWidth,
+                                      normalizedValue) ??
+                                  0) /
+                              2,
+                      child: Container(
+                        color: const Color(0xFF80D0D4),
+                        width: lerpDouble(
+                            45.adaptedWidth, 110.adaptedWidth, normalizedValue),
+                        height: 4.adaptedHeight,
+                      )),
+                ]);
+              }),
           Image.asset(
               width: 81.adaptedHeight,
               height: 40.adaptedHeight,
               "assets/mascotte_rythm_chill.png"),
           SizedBox(height: 18.adaptedHeight),
-          state is RecordingMvc ?
-          StreamBuilder(
-            stream: state.progressStream,
-            builder: (context, progressValue) {
-              return Text(
-                "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.baseValueRecordingTime.inSeconds).ceil()}",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 26.adaptedFontSize,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF66A6AA)),
-              );
-            })
-          : FilledButton(
-              onPressed: () => context.read<ProportionalControlBloc>().add(StartRecordingMvc(rmsStream)),
-              style: FilledButton.styleFrom(
-                fixedSize: Size(
-                  343.adaptedWidth,
-                  48.adaptedHeight,
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(24.adaptedRadius))),
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.start,
-                style: TextStyle(
-                    fontSize: 24.adaptedFontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              )),
-        ]));
-  }
-
-  Widget _buildBiofeedbackBody(BuildContext context, FeedbackProportionalControlState state, Stream<RmsData> rmsStream) {
-    if (state is Active && context.read<ProportionalControlFileBloc>().state is! Recording) {
-      context.read<ProportionalControlFileBloc>().add(StartRecordingBiofeedback(
-          state.cyclicFeedbackStream,
-          state.repetitionsStream,
-          state.baseValue,
-          state.mvc));
-    }
-
-    return BlocListener<ProportionalControlFileBloc, RemoFileState>(
-      listener: (context, state) async {
-        if (state is RecordingComplete) {
-          Navigator.pushNamed(context, "/save_page",
-              arguments: SavePageMode.biofeedback);
-        }
-      },
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(AppLocalizations.of(context)!.step_3,
-                style: TextStyle(
-                    fontSize: 26.adaptedFontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2B3A51))),
-            SizedBox(height: 8.adaptedHeight),
-            Text(
-              AppLocalizations.of(context)!.biofeedback_message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 20.adaptedFontSize,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF2B3A51)),
-            ),
-            SizedBox(height: 40.adaptedHeight),
-            StreamBuilder(
-                stream: state.cyclicFeedbackStream,
-                builder: (context, feedbackValue) =>
-                    RemoSlider(feedbackValue.data ?? 0)),
-            SizedBox(height: 35.adaptedHeight),
-            state is Active ? StreamBuilder(
-              stream: state.repetitionsStream,
-              builder: (context, repetitions) => Text(
-                    AppLocalizations.of(context)!
-                        .repetitions(repetitions.data ?? 0),
-                    style: TextStyle(
-                        fontSize: 26.adaptedFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF66A6AA)),
-                  ))
-            : Container(),
-            SizedBox(height: 8.adaptedHeight),
-            state is Active ? Text(
-              AppLocalizations.of(context)!.stop_exercise,
-              style: TextStyle(
-                  fontSize: 14.adaptedFontSize,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF4C5460)),
-            ) : Container(),
-            SizedBox(height: 3.adaptedHeight),
-            state is Active ? RecordButton(
-                key: Key("test"),
-                recording: true,
-                onStopPressed: () {
-                  context.read<ProportionalControlBloc>().add(StopOperations());
-                  context
-                      .read<ProportionalControlFileBloc>()
-                      .add(StopRecording());
-                })
-            : FilledButton(
-                onPressed: () => context.read<ProportionalControlBloc>().add(StartProportionalControl(rmsStream)),
-                style: FilledButton.styleFrom(
-                  fixedSize: Size(
-                    343.adaptedWidth,
-                    48.adaptedHeight,
-                  ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(24.adaptedRadius))),
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.start,
-                  style: TextStyle(
-                      fontSize: 24.adaptedFontSize,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                )),
-          ]),
-    );
-  }
-
-  Widget _buildPreExerciseBody(BuildContext context, RemoState remoState,
-      String stepText, String message, VoidCallback? buttonCallback) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(17.adaptedWidth, 0, 17.adaptedWidth, 0),
-        child: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 20,
-                children: [
-              SizedBox(height: 60.adaptedHeight),
-              Text(
-                stepText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 26.adaptedFontSize,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
-              ),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 15.adaptedFontSize,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
-              ),
-              SizedBox(height: 20.adaptedHeight),
-              Transform.rotate(
-                  angle: 0.5,
-                  child: Image.asset(
-                    'assets/wear_remo_2.png',
-                  )),
-              SizedBox(height: 80.adaptedHeight),
-              FilledButton(
-                  onPressed: buttonCallback,
+          state is RecordingMvc
+              ? StreamBuilder(
+                  stream: state.progressStream,
+                  builder: (context, progressValue) {
+                    return Text(
+                      "00:0${((1 - (progressValue.data ?? 0)) * ProportionalControlBloc.mvcRecordingTime.inSeconds).ceil()}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 26.adaptedFontSize,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF66A6AA)),
+                    );
+                  })
+              : FilledButton(
+                  onPressed: () => context
+                      .read<ProportionalControlBloc>()
+                      .add(StartRecordingMvc(rmsStream)),
                   style: FilledButton.styleFrom(
                     fixedSize: Size(
                       343.adaptedWidth,
@@ -531,7 +423,100 @@ class ContractionsPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
                   )),
-            ])));
+        ]));
+  }
+
+  Widget _buildBiofeedbackBody(BuildContext context,
+      FeedbackProportionalControlState state, Stream<RmsData> rmsStream) {
+    return BlocListener<ProportionalControlFileBloc, RemoFileState>(
+      listener: (context, fileState) async {
+        if (fileState is RecordingComplete) {
+          Navigator.pushNamed(context, "/save_page",
+              arguments: SavePageMode.biofeedback);
+        }
+      },
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(AppLocalizations.of(context)!.step_3,
+                style: TextStyle(
+                    fontSize: 26.adaptedFontSize,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF2B3A51))),
+            SizedBox(height: 8.adaptedHeight),
+            Text(
+              AppLocalizations.of(context)!.biofeedback_message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 20.adaptedFontSize,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF2B3A51)),
+            ),
+            SizedBox(height: 40.adaptedHeight),
+            StreamBuilder(
+                stream: state.cyclicFeedbackStream,
+                builder: (context, feedbackValue) =>
+                    RemoSlider(feedbackValue.data ?? 0)),
+            SizedBox(height: 35.adaptedHeight),
+            state is Active
+                ? StreamBuilder(
+                    stream: state.repetitionsStream,
+                    builder: (context, repetitions) => Text(
+                          AppLocalizations.of(context)!
+                              .repetitions(repetitions.data ?? 0),
+                          style: TextStyle(
+                              fontSize: 26.adaptedFontSize,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF66A6AA)),
+                        ))
+                : Container(),
+            SizedBox(height: 8.adaptedHeight),
+            state is Active
+                ? Text(
+                    AppLocalizations.of(context)!.stop_exercise,
+                    style: TextStyle(
+                        fontSize: 14.adaptedFontSize,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF4C5460)),
+                  )
+                : Container(),
+            SizedBox(height: 3.adaptedHeight),
+            state is Active
+                ? RecordButton(
+                    key: const Key("biofeedback_record"),
+                    recording: true,
+                    onStopPressed: () {
+                      context
+                          .read<ProportionalControlBloc>()
+                          .add(StopOperations());
+                      context
+                          .read<ProportionalControlFileBloc>()
+                          .add(StopRecording());
+                    })
+                : FilledButton(
+                    onPressed: () => context
+                        .read<ProportionalControlBloc>()
+                        .add(StartProportionalControl(rmsStream)),
+                    style: FilledButton.styleFrom(
+                      fixedSize: Size(
+                        343.adaptedWidth,
+                        48.adaptedHeight,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(24.adaptedRadius))),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: Text(
+                      AppLocalizations.of(context)!.start,
+                      style: TextStyle(
+                          fontSize: 24.adaptedFontSize,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    )),
+          ]),
+    );
   }
 
   Widget _buildNextExerciseBody(BuildContext context, RemoState remoState,
@@ -562,8 +547,8 @@ class ContractionsPage extends StatelessWidget {
                   48.adaptedHeight,
                 ),
                 shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(24.adaptedRadius))),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(24.adaptedRadius))),
                 backgroundColor: Theme.of(context).primaryColor,
               ),
               child: Text(
@@ -581,8 +566,8 @@ class ContractionsPage extends StatelessWidget {
                   48.adaptedHeight,
                 ),
                 shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(24.adaptedRadius))),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(24.adaptedRadius))),
                 backgroundColor: Colors.transparent,
               ),
               child: Text(
@@ -598,7 +583,7 @@ class ContractionsPage extends StatelessWidget {
   Widget _buildChartButtons(BuildContext context) {
     return Row(
       children: [
-        Spacer(),
+        const Spacer(),
         FilledButton(
           onPressed: () => Navigator.pop(context),
           style: FilledButton.styleFrom(
@@ -617,7 +602,7 @@ class ContractionsPage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF93959B))),
         ),
-        Spacer(),
+        const Spacer(),
         FilledButton(
           onPressed: () {},
           style: FilledButton.styleFrom(
@@ -638,7 +623,7 @@ class ContractionsPage extends StatelessWidget {
             ),
           ),
         ),
-        Spacer()
+        const Spacer()
       ],
     );
   }

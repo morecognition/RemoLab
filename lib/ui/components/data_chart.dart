@@ -370,7 +370,7 @@ class _DataChartState extends State<DataChart> {
   }
   @override
   void dispose() {
-    super.dispose();
     rmsStreamSubscription.cancel();
+    super.dispose();
   }
 }

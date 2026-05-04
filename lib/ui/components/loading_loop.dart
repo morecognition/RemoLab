@@ -23,22 +23,18 @@ class _LoadingLoopState extends State<LoadingLoop>
     super.initState();
 
     controller =
-        AnimationController(duration: Duration(milliseconds: 3000), vsync: this)
-          ..addListener(() => controller.repeat());
+        AnimationController(duration: const Duration(milliseconds: 3000), vsync: this);
 
-    rotation = Tween<double>(begin: 0.0, end: 360.0 * 4,)
+    rotation = Tween<double>(begin: 0.0, end: 360.0 * 4)
         .animate(CurvedAnimation(parent: controller, curve: Curves.easeInOutCubic));
+
+    Future.delayed(widget.startDelay, () {
+      if (mounted) controller.repeat();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    controller.value = controller.upperBound;
-    Future.delayed(Duration(milliseconds: widget.startDelay.inMilliseconds),
-        () {
-      if (mounted) {
-        controller.forward(from: 0);
-      }
-    });
     return AnimatedBuilder(
         animation: controller,
         builder: (context, widget) {

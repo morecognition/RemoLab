@@ -7,8 +7,33 @@ import 'package:remorder/ui/components/loading_ring.dart';
 
 import '../../l10n/app_localizations.dart';
 
-class RemoConnection extends StatelessWidget {
+class RemoConnection extends StatefulWidget {
   const RemoConnection({super.key});
+
+  @override
+  State<RemoConnection> createState() => _RemoConnectionState();
+}
+
+class _RemoConnectionState extends State<RemoConnection> {
+  late Future<bool> _isBluetoothOnFuture;
+  bool _navigatingToHome = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isBluetoothOnFuture = _checkBluetoothIsOn();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (context.read<BluetoothBloc>().state is BluetoothInitial) {
+        context.read<BluetoothBloc>().add(OnStartDiscovery());
+      }
+    });
+  }
+
+  Future<bool> _checkBluetoothIsOn() async {
+    return await FlutterBluePlus.adapterState.first ==
+        BluetoothAdapterState.on;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +42,11 @@ class RemoConnection extends StatelessWidget {
       return BlocBuilder<RemoBloc, RemoState>(builder: (context, remoState) {
         return Stack(
           children: [
-            Image.asset(
-              "assets/page_background.png",
-              width: 375.adaptedWidth,
-              height: 812.adaptedHeight,
-              fit: BoxFit.cover,
+            SizedBox.expand(
+              child: Image.asset(
+                "assets/page_background.png",
+                fit: BoxFit.cover,
+              ),
             ),
             Scaffold(
                 appBar: AppBar(
@@ -36,12 +61,8 @@ class RemoConnection extends StatelessWidget {
                     title: _getAppTitle(bluetoothState, remoState)),
                 backgroundColor: Colors.transparent,
                 body: FutureBuilder<bool>(
-                    future: checkBluetoothIsOn(),
+                    future: _isBluetoothOnFuture,
                     builder: (context, AsyncSnapshot<bool> snapshot) {
-                      if (bluetoothState is BluetoothInitial) {
-                        context.read<BluetoothBloc>().add(OnStartDiscovery());
-                      }
-
                       if (remoState is Disconnected) {
                         var isBluetoothOn =
                             snapshot.data != null && snapshot.data!;
@@ -65,7 +86,7 @@ class RemoConnection extends StatelessWidget {
                       } else if (remoState is Connecting) {
                         return _buildWaitingWidget();
                       } else if (remoState is Connected) {
-                        return _buildParingSuccessfulWidget(context);
+                        return _buildParingSuccessfulWidget();
                       } else if (remoState is ConnectionError) {
                         return _buildParingFailedWidget(context);
                       } else {
@@ -80,7 +101,7 @@ class RemoConnection extends StatelessWidget {
 
   Widget _getAppTitle(BluetoothState bluetoothState, RemoState remoState) {
     return FutureBuilder<bool>(
-        future: checkBluetoothIsOn(),
+        future: _isBluetoothOnFuture,
         builder: (context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData) {
             if (remoState is Disconnected) {
@@ -111,7 +132,7 @@ class RemoConnection extends StatelessWidget {
               return Text("$remoState");
             }
           }
-          return Container();
+          return const SizedBox.shrink();
         });
   }
 
@@ -125,8 +146,8 @@ class RemoConnection extends StatelessWidget {
             Image.asset(
               'assets/remo_icon.png',
             ),
-            LoadingRing(),
-            LoadingRing(startDelay: Duration(milliseconds: 1500))
+            const LoadingRing(),
+            const LoadingRing(startDelay: Duration(milliseconds: 1500))
           ])
         ],
       ),
@@ -147,14 +168,13 @@ class RemoConnection extends StatelessWidget {
               leading: Image.asset("assets/remo.png"),
               title: Text(
                 bluetoothState.deviceNames[index],
-                style: TextStyle(
+                style: const TextStyle(
                     color: Color(0xFF2B3A51), fontWeight: FontWeight.w600),
               ),
-              //subtitle: Text(bluetoothState.deviceAddresses[index]),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.adaptedRadius),
               ),
-              tileColor: Color(0x6680D0D4),
+              tileColor: const Color(0x6680D0D4),
               onTap: () {
                 context.read<RemoBloc>().add(
                       OnConnectDevice(bluetoothState.deviceAddresses[index],
@@ -168,11 +188,15 @@ class RemoConnection extends StatelessWidget {
     );
   }
 
-  Widget _buildParingSuccessfulWidget(BuildContext context) {
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.pop(context);
-      Navigator.pushNamed(context, "/home");
-    });
+  Widget _buildParingSuccessfulWidget() {
+    if (!_navigatingToHome) {
+      _navigatingToHome = true;
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        Navigator.pop(context);
+        Navigator.pushNamed(context, "/home");
+      });
+    }
     return Center(
         child: Column(children: [
       SizedBox(height: 200.adaptedHeight),
@@ -213,9 +237,5 @@ class RemoConnection extends StatelessWidget {
                 fontSize: 20.adaptedFontSize, fontWeight: FontWeight.w600)),
       ),
     ]));
-  }
-
-  Future<bool> checkBluetoothIsOn() async {
-    return await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
   }
 }
