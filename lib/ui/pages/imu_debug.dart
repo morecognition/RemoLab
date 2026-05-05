@@ -40,12 +40,40 @@ class _ImuDebugState extends State<ImuDebug> {
         backgroundColor: const Color(0xFFF6F7FF),
         toolbarHeight: 50.adaptedHeight,
         flexibleSpace: Container(
-            alignment: Alignment.bottomCenter,
-            child: Text("Gyro Debug",
-                style: TextStyle(
+          alignment: Alignment.bottomCenter,
+          child: Row(
+            children: [
+              SizedBox(height: 36.adaptedHeight),
+              IconButton(
+                padding: EdgeInsets.fromLTRB(
+                  16.adaptedWidth,
+                  0,
+                  16.adaptedWidth,
+                  0,
+                ),
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.arrow_back,
+                  size: 26.adaptedWidth,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  textAlign: TextAlign.center,
+                  "Gyro Debug",
+                  style: TextStyle(
                     color: const Color(0xFF2B3A51),
                     fontSize: 20.adaptedFontSize,
-                    fontWeight: FontWeight.w700))),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              SizedBox(height: 36.adaptedHeight),
+              SizedBox(width: 58.adaptedWidth),
+            ],
+          ),
+        ),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF6F7FF),
@@ -58,24 +86,28 @@ class _ImuDebugState extends State<ImuDebug> {
         builder: (builderContext, remoState) {
           if (remoState is StartingTransmission ||
               remoState is StoppingTransmission) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           return Center(
-              child: Stack(
-            children: [
-              ImuDataVisualization(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ImuDataVisualization(
+                    imuDataStream: remoState is TransmissionStarted
+                        ? remoState.imuDataStream
+                        : Stream.empty(),
+                  ),
+                ),
+                RotationGizmo(
                   imuDataStream: remoState is TransmissionStarted
                       ? remoState.imuDataStream
-                      : Stream.empty()),
-              RotationGizmo(
-                  imuDataStream: remoState is TransmissionStarted
-                      ? remoState.imuDataStream
-                      : Stream.empty()),
-            ],
-          ));
+                      : Stream.empty(),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
