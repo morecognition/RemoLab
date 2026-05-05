@@ -9,9 +9,11 @@ class ChannelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 74.adaptedWidth,
-      height: 32.adaptedHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: 74.adaptedWidth,
+        minHeight: 32.adaptedHeight,
+      ),
       child: TextButton.icon(
         onPressed: () {},
         style: TextButton.styleFrom(

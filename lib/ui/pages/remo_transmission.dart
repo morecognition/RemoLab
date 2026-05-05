@@ -141,54 +141,52 @@ class _RemoTransmissionState extends State<RemoTransmission> {
                       arguments: SavePageMode.rms);
                 }
               },
-              child: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 16.adaptedHeight),
-                      Column(children: [
-                        _buildChartButtons(),
-                        SizedBox(height: 46.adaptedHeight),
-                        _buildFilterButtons(),
-                        SizedBox(height: 12.adaptedHeight),
-                      ]),
-                      Container(
-                        width: 343.adaptedWidth,
-                        height: 432.adaptedHeight,
-                        color: Colors.white,
-                        child: BlocBuilder<RemoFileBloc, RemoFileState>(
-                            builder: (context, remoFileState) {
-                          return remoState is TransmissionStarted
-                              ? DataChart(
-                                  rmsDataStream: remoState.rmsDataStream,
-                                  colors: channelColors,
-                                  isRecording: remoFileState is Recording,
-                                  key: const Key("remo chart"))
-                              : DataChart(
-                                  rmsDataStream: Stream.empty(),
-                                  colors: channelColors,
-                                  key: const Key("empty chart"));
-                        }),
-                      ),
-                      SizedBox(height: 15.adaptedHeight),
-                      BlocBuilder<RemoFileBloc, RemoFileState>(
-                          builder: (context, remoFileState) => RecordButton(
-                                recording: remoFileState is Recording,
-                                onRecordPressed: () => context
-                                    .read<RemoFileBloc>()
-                                    .add(StartRecording(
-                                        remoState is TransmissionStarted
-                                            ? remoState.rmsDataStream
-                                            : Stream.empty(),
-                                        remoState is TransmissionStarted
-                                            ? remoState.imuDataStream
-                                            : Stream.empty())),
-                                onStopPressed: () => context
-                                    .read<RemoFileBloc>()
-                                    .add(StopRecording()),
-                              )),
-                    ]),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 16.adaptedHeight),
+                  _buildChartButtons(),
+                  SizedBox(height: 16.adaptedHeight),
+                  _buildFilterButtons(),
+                  SizedBox(height: 12.adaptedHeight),
+                  Expanded(
+                    child: Container(
+                      width: 343.adaptedWidth,
+                      color: Colors.white,
+                      child: BlocBuilder<RemoFileBloc, RemoFileState>(
+                          builder: (context, remoFileState) {
+                        return remoState is TransmissionStarted
+                            ? DataChart(
+                                rmsDataStream: remoState.rmsDataStream,
+                                colors: channelColors,
+                                isRecording: remoFileState is Recording,
+                                key: const Key("remo chart"))
+                            : DataChart(
+                                rmsDataStream: Stream.empty(),
+                                colors: channelColors,
+                                key: const Key("empty chart"));
+                      }),
+                    ),
+                  ),
+                  SizedBox(height: 15.adaptedHeight),
+                  BlocBuilder<RemoFileBloc, RemoFileState>(
+                      builder: (context, remoFileState) => RecordButton(
+                            recording: remoFileState is Recording,
+                            onRecordPressed: () => context
+                                .read<RemoFileBloc>()
+                                .add(StartRecording(
+                                    remoState is TransmissionStarted
+                                        ? remoState.rmsDataStream
+                                        : Stream.empty(),
+                                    remoState is TransmissionStarted
+                                        ? remoState.imuDataStream
+                                        : Stream.empty())),
+                            onStopPressed: () => context
+                                .read<RemoFileBloc>()
+                                .add(StopRecording()),
+                          )),
+                ],
               ),
             );
           },

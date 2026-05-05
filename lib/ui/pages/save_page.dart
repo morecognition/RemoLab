@@ -208,10 +208,8 @@ class _SaveState extends State<SavePage> {
       shape: ContinuousRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(5.adaptedRadius)),
       ),
-      content: SizedBox(
-        width: 343.adaptedWidth,
-        height: 352.adaptedHeight,
-        child: Column(
+      content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 33.adaptedHeight),
             Image.asset("assets/trash_icon.png"),
@@ -265,9 +263,9 @@ class _SaveState extends State<SavePage> {
                 ),
               ),
             ),
+            SizedBox(height: 20.adaptedHeight),
           ],
         ),
-      ),
     );
   }
 

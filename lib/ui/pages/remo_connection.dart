@@ -242,32 +242,34 @@ class _RemoConnectionState extends State<RemoConnection> {
 
   Widget _buildParingFailedWidget(BuildContext context) {
     return Center(
-        child: Column(children: [
-      SizedBox(height: 200.adaptedHeight),
-      Image.asset(
-        'assets/remo_fail.png',
-      ),
-      SizedBox(height: 170.adaptedHeight),
-      Text(AppLocalizations.of(context)!.wear_remo),
-      SizedBox(height: 10.adaptedHeight),
-      Text(AppLocalizations.of(context)!.turn_on_bt),
-      SizedBox(height: 42.adaptedHeight),
-      FilledButton(
-        onPressed: _retry,
-        style: FilledButton.styleFrom(
-          fixedSize: Size(
-            343.adaptedWidth,
-            48.adaptedHeight,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Spacer(flex: 2),
+          Image.asset('assets/remo_fail.png'),
+          const Spacer(flex: 2),
+          Text(AppLocalizations.of(context)!.wear_remo),
+          SizedBox(height: 10.adaptedHeight),
+          Text(AppLocalizations.of(context)!.turn_on_bt),
+          SizedBox(height: 42.adaptedHeight),
+          FilledButton(
+            onPressed: _retry,
+            style: FilledButton.styleFrom(
+              fixedSize: Size(343.adaptedWidth, 48.adaptedHeight),
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(24.adaptedRadius))),
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: Text(AppLocalizations.of(context)!.try_again,
+                style: TextStyle(
+                    fontSize: 20.adaptedFontSize,
+                    fontWeight: FontWeight.w600)),
           ),
-          shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.all(Radius.circular(24.adaptedRadius))),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        child: Text(AppLocalizations.of(context)!.try_again,
-            style: TextStyle(
-                fontSize: 20.adaptedFontSize, fontWeight: FontWeight.w600)),
+          const Spacer(),
+        ],
       ),
-    ]));
+    );
   }
 }
