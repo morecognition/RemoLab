@@ -38,6 +38,13 @@ class _RemoConnectionState extends State<RemoConnection> {
     });
   }
 
+  void _retry() {
+    setState(() {
+      _isBluetoothOnFuture = widget.bluetoothChecker();
+    });
+    context.read<BluetoothBloc>().add(OnStartDiscovery());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BluetoothBloc, BluetoothState>(
@@ -161,32 +168,56 @@ class _RemoConnectionState extends State<RemoConnection> {
       BuildContext context, DiscoveredDevices bluetoothState) {
     return Padding(
       padding: EdgeInsets.only(top: 70.adaptedHeight),
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: List.generate(bluetoothState.deviceNames.length, (index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: 8.adaptedHeight, horizontal: 17.adaptedWidth),
-            child: ListTile(
-              leading: Image.asset("assets/remo.png"),
-              title: Text(
-                bluetoothState.deviceNames[index],
-                style: const TextStyle(
-                    color: Color(0xFF2B3A51), fontWeight: FontWeight.w600),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.adaptedRadius),
-              ),
-              tileColor: const Color(0x6680D0D4),
-              onTap: () {
-                context.read<RemoBloc>().add(
-                      OnConnectDevice(bluetoothState.deviceAddresses[index],
-                          bluetoothState.deviceNames[index]),
-                    );
-              },
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: List.generate(bluetoothState.deviceNames.length, (index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 8.adaptedHeight, horizontal: 17.adaptedWidth),
+                  child: ListTile(
+                    leading: Image.asset("assets/remo.png"),
+                    title: Text(
+                      bluetoothState.deviceNames[index],
+                      style: const TextStyle(
+                          color: Color(0xFF2B3A51), fontWeight: FontWeight.w600),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.adaptedRadius),
+                    ),
+                    tileColor: const Color(0x6680D0D4),
+                    onTap: () {
+                      context.read<RemoBloc>().add(
+                            OnConnectDevice(bluetoothState.deviceAddresses[index],
+                                bluetoothState.deviceNames[index]),
+                          );
+                    },
+                  ),
+                );
+              }),
             ),
-          );
-        }),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: 42.adaptedHeight, horizontal: 17.adaptedWidth),
+            child: FilledButton(
+              onPressed: _retry,
+              style: FilledButton.styleFrom(
+                fixedSize: Size(343.adaptedWidth, 48.adaptedHeight),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(24.adaptedRadius))),
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+              child: Text(AppLocalizations.of(context)!.try_again,
+                  style: TextStyle(
+                      fontSize: 20.adaptedFontSize,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -222,9 +253,7 @@ class _RemoConnectionState extends State<RemoConnection> {
       Text(AppLocalizations.of(context)!.turn_on_bt),
       SizedBox(height: 42.adaptedHeight),
       FilledButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
+        onPressed: _retry,
         style: FilledButton.styleFrom(
           fixedSize: Size(
             343.adaptedWidth,
