@@ -93,14 +93,16 @@ class _RemoConnectionState extends State<RemoConnection> {
                         } else {
                           return Text("$bluetoothState");
                         }
-                      } else if (remoState is Connecting) {
+                      } else if (remoState is Connecting ||
+                          remoState is StartingTransmission) {
                         return _buildWaitingWidget();
-                      } else if (remoState is Connected) {
+                      } else if (remoState is Connected ||
+                          remoState is TransmissionStarted) {
                         return _buildParingSuccessfulWidget();
                       } else if (remoState is ConnectionError) {
                         return _buildParingFailedWidget(context);
                       } else {
-                        return Text("$remoState");
+                        return _buildWaitingWidget();
                       }
                     })),
           ],
@@ -132,14 +134,16 @@ class _RemoConnectionState extends State<RemoConnection> {
               } else {
                 return Text("$bluetoothState");
               }
-            } else if (remoState is Connecting) {
+            } else if (remoState is Connecting ||
+                remoState is StartingTransmission) {
               return Text(AppLocalizations.of(context)!.pairing);
-            } else if (remoState is Connected) {
+            } else if (remoState is Connected ||
+                remoState is TransmissionStarted) {
               return Text(AppLocalizations.of(context)!.pairing_successful);
             } else if (remoState is ConnectionError) {
               return Text(AppLocalizations.of(context)!.pairing_fail);
             } else {
-              return Text("$remoState");
+              return _buildWaitingWidget();
             }
           }
           return const SizedBox.shrink();
