@@ -37,4 +37,23 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
   end
+
+  # Inject a preprocessor define that renames FileUtils → FPFileUtils only
+  # within the file_picker target, avoiding the ObjC class name collision with
+  # Apple's private OSAnalytics.framework that causes EXC_BAD_ACCESS at launch.
+  installer.pods_project.targets
+    .select { |t| t.name == 'file_picker' }
+    .each do |target|
+      target.build_configurations.each do |config|
+        xcconfig_path = config.base_configuration_reference&.real_path
+        next unless xcconfig_path && File.exist?(xcconfig_path)
+        xcconfig = File.read(xcconfig_path)
+        next if xcconfig.include?('FileUtils=FPFileUtils')
+        patched = xcconfig.gsub(
+          /^(GCC_PREPROCESSOR_DEFINITIONS\s*=\s*.*)$/,
+          '\1 FileUtils=FPFileUtils'
+        )
+        File.write(xcconfig_path, patched)
+      end
+    end
 end

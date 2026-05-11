@@ -7,8 +7,14 @@ import 'package:remorder/ui/components/loading_ring.dart';
 
 import '../../l10n/app_localizations.dart';
 
-Future<bool> _defaultBluetoothChecker() async =>
-    await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
+Future<bool> _defaultBluetoothChecker() async {
+  final state = await FlutterBluePlus.adapterState
+      .where((s) => s != BluetoothAdapterState.unknown)
+      .first
+      .timeout(const Duration(seconds: 10),
+          onTimeout: () => BluetoothAdapterState.unavailable);
+  return state == BluetoothAdapterState.on;
+}
 
 class RemoConnection extends StatefulWidget {
   const RemoConnection({
@@ -32,9 +38,7 @@ class _RemoConnectionState extends State<RemoConnection> {
     _isBluetoothOnFuture = widget.bluetoothChecker();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (context.read<BluetoothBloc>().state is BluetoothInitial) {
-        context.read<BluetoothBloc>().add(OnStartDiscovery());
-      }
+      context.read<BluetoothBloc>().add(OnStartDiscovery());
     });
   }
 
@@ -73,7 +77,14 @@ class _RemoConnectionState extends State<RemoConnection> {
                 body: FutureBuilder<bool>(
                     future: _isBluetoothOnFuture,
                     builder: (context, AsyncSnapshot<bool> snapshot) {
+                      if (_navigatingToHome) {
+                        return _buildParingSuccessfulWidget();
+                      }
                       if (remoState is Disconnected) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _buildWaitingWidget();
+                        }
                         var isBluetoothOn =
                             snapshot.data != null && snapshot.data!;
                         if (!isBluetoothOn) {
@@ -91,7 +102,7 @@ class _RemoConnectionState extends State<RemoConnection> {
                         } else if (bluetoothState is DiscoveryError) {
                           return _buildParingFailedWidget(context);
                         } else {
-                          return Text("$bluetoothState");
+                          return _buildWaitingWidget();
                         }
                       } else if (remoState is Connecting ||
                           remoState is StartingTransmission) {
@@ -115,6 +126,9 @@ class _RemoConnectionState extends State<RemoConnection> {
     return FutureBuilder<bool>(
         future: _isBluetoothOnFuture,
         builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (_navigatingToHome) {
+            return Text(AppLocalizations.of(context)!.pairing_successful);
+          }
           if (snapshot.hasData) {
             if (remoState is Disconnected) {
               var isBluetoothOn = snapshot.data != null && snapshot.data!;
@@ -132,7 +146,7 @@ class _RemoConnectionState extends State<RemoConnection> {
               } else if (bluetoothState is DiscoveryError) {
                 return Text(AppLocalizations.of(context)!.pairing_fail);
               } else {
-                return Text("$bluetoothState");
+                return Text(AppLocalizations.of(context)!.looking_for_remo);
               }
             } else if (remoState is Connecting ||
                 remoState is StartingTransmission) {
